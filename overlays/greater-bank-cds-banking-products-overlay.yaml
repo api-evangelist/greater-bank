@@ -1,0 +1,29 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Greater Bank CDR Product Reference Data API
+  version: 1.0.0
+extends: openapi/greater-bank-cds-banking-products-openapi.yml
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-provider: greater-bank
+      x-apievangelist-provenance: >-
+        Shared DSB Consumer Data Standards CDR Banking API (OpenAPI 3.0.3), not a
+        Greater Bank proprietary contract. Greater Bank exposes the public,
+        unauthenticated Product Reference Data (PRD) subset.
+      x-apievangelist-public-base-url: https://public.cdr.greater.com.au/cds-au/v1
+      x-apievangelist-public-operations: [listBankingProducts, getBankingProductDetail]
+      x-apievangelist-confirmed-live: true
+      x-apievangelist-confirmed-version: '4'
+  - target: $.servers
+    update:
+      - description: Greater Bank public CDR Product Reference Data (confirmed live)
+        url: https://public.cdr.greater.com.au/cds-au/v1
+  - target: "$.paths['/banking/products'].get"
+    update:
+      x-apievangelist-public: true
+      x-apievangelist-auth: none
+  - target: "$.paths['/banking/products/{productId}'].get"
+    update:
+      x-apievangelist-public: true
+      x-apievangelist-auth: none

@@ -1,0 +1,61 @@
+generated: '2026-07-20'
+method: derived
+source: openapi/greater-bank-cds-banking-products-openapi.yml
+note: >-
+  Standards conformance derived from the harvested spec (the shared DSB Consumer
+  Data Standards "CDR Banking API" OpenAPI 3.0.3 v1.36.0 that Greater Bank
+  implements) and the confirmed live behaviour of the public PRD endpoint. The
+  authenticated CDR data-sharing tier (OAuth2/OIDC FAPI) is documented via the
+  CDR register/accredited-data-recipient model, not via this public,
+  unauthenticated Product Reference Data spec.
+standards:
+  - id: cdr-banking-au
+    name: Consumer Data Right (CDR) Banking API — DSB Consumer Data Standards
+    conforms: true
+    evidence: >-
+      Spec is the shared DSB Consumer Data Standards CDR Banking API (title "CDR
+      Banking API" v1.36.0, contact contact@dsb.gov.au). Public PRD endpoint
+      confirmed live returning HTTP 200 with x-v response header 4 (supported
+      versions 4-5) under brand "GB" / brandName "Greater Bank".
+  - id: cdr-product-reference-data
+    name: CDR Product Reference Data (PRD) — public, unauthenticated
+    conforms: true
+    evidence: >-
+      GET /cds-au/v1/banking/products and GET /banking/products/{productId}
+      served publicly without authentication per the CDR PRD requirement for
+      data holders.
+  - id: api-versioning-headers
+    name: CDS mandatory endpoint versioning (x-v / x-min-v)
+    conforms: true
+    evidence: >-
+      x-v request header is required on every operation; x-v response header is
+      returned; an unsupported version yields 406 Not Acceptable (confirmed:
+      x-v 3 -> 406, x-v 4 -> 200).
+  - id: pagination-standard
+    name: CDS standard pagination
+    conforms: true
+    evidence: >-
+      listBankingProducts exposes page + page-size query params; responses carry
+      LinksPaginated (self/first/prev/next/last) and MetaPaginated
+      (totalRecords/totalPages).
+  - id: oauth2
+    name: OAuth 2.0 (authenticated CDR data-sharing tier)
+    conforms: true
+    evidence: >-
+      Documented via the CDR accredited-data-recipient model, not declared in
+      this public PRD spec (no securitySchemes; the PRD endpoint is
+      unauthenticated). Not independently probed.
+  - id: fapi-oidc
+    name: OpenID Connect FAPI profile (authenticated CDR data-sharing tier)
+    conforms: true
+    evidence: >-
+      CDR consumer-data sharing runs on OIDC under the FAPI profile via the CDR
+      register/info-security endpoints. Documented, not present in this public
+      spec.
+  - id: rfc9457-problem-details
+    name: RFC 9457 Problem Details (application/problem+json)
+    conforms: false
+    evidence: >-
+      Errors use the CDS ResponseErrorListV2 envelope ({ errors: [ { code,
+      title, detail, meta } ] } as application/json with URN-style codes), not
+      RFC 9457 application/problem+json.

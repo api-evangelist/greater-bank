@@ -56,6 +56,32 @@ apis:
     contract; the harvested OpenAPI is the shared CDS standard, not a Greater Bank
     proprietary specification.
 common:
+- type: AgenticAccess
+  url: agentic-access/greater-bank-agentic-access.yml
+- type: DomainSecurity
+  url: security/greater-bank-domain-security.yml
+- type: Authentication
+  url: authentication/greater-bank-authentication.yml
+- type: Conventions
+  url: conventions/greater-bank-conventions.yml
+- type: ErrorCatalog
+  url: errors/greater-bank-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/greater-bank-lifecycle.yml
+- type: Deprecation
+  url: https://consumerdatastandardsaustralia.github.io/standards/#versioning
+- type: Conformance
+  url: conformance/greater-bank-conformance.yml
+- type: DataModel
+  url: data-model/greater-bank-data-model.yml
+- type: MCPServer
+  url: mcp/greater-bank-mcp.yml
+- type: LLMsTxt
+  url: llms/greater-bank-llms.txt
+- type: Overlay
+  url: overlays/greater-bank-cds-banking-products-overlay.yaml
+- type: AgentSkill
+  url: skills/_index.yml
 - type: Website
   url: https://www.greater.com.au/
 - type: Documentation

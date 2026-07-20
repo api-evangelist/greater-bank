@@ -1,0 +1,61 @@
+generated: '2026-07-20'
+method: derived
+source: openapi/greater-bank-cds-banking-products-openapi.yml
+note: >-
+  Entity-relationship graph derived from the CDS Banking Products schemas that
+  back Greater Bank's public PRD API (BankingProductV6 for list items,
+  BankingProductDetailV7 = BankingProductV6 + detail sub-objects). Scope is the
+  public product surface only.
+entities:
+  - name: BankingProduct
+    schema: BankingProductV6
+    id_field: productId
+    id_note: >-
+      Data-holder-specific unique product identifier (ASCIIString); unique to a
+      product but not guaranteed to follow CDR ID-permanence rules.
+    key_fields: [productId, effectiveFrom, effectiveTo, lastUpdated, productCategory, name, description, brand, brandName, isTailored, applicationUri, cardArt, additionalInformation]
+  - name: BankingProductDetail
+    schema: BankingProductDetailV7
+    extends: BankingProductV6
+    detail_note: Full product detail returned by getBankingProductDetail.
+  - name: BankingProductCategory
+    schema: BankingProductCategoryV2
+    kind: enumeration
+    values: [BUSINESS_LOANS, BUY_NOW_PAY_LATER, CRED_AND_CHRG_CARDS, LEASES, MARGIN_LOANS, OVERDRAFTS, PERS_LOANS, REGULATED_TRUST_ACCOUNTS, RESIDENTIAL_MORTGAGES, TERM_DEPOSITS, TRADE_FINANCE, TRANS_AND_SAVINGS_ACCOUNTS, TRAVEL_CARDS]
+relationships:
+  - from: BankingProduct
+    to: BankingProductCategory
+    kind: belongs_to
+    via: productCategory
+  - from: BankingProductDetail
+    to: BankingProductBundle
+    kind: has_many
+    via: bundles
+  - from: BankingProductDetail
+    to: BankingProductFeatureV4
+    kind: has_many
+    via: features
+  - from: BankingProductDetail
+    to: BankingProductConstraintV3
+    kind: has_many
+    via: constraints
+  - from: BankingProductDetail
+    to: BankingProductEligibilityV2
+    kind: has_many
+    via: eligibility
+  - from: BankingProductDetail
+    to: BankingProductFeeV2
+    kind: has_many
+    via: fees
+  - from: BankingProductDetail
+    to: BankingProductDepositRateV2
+    kind: has_many
+    via: depositRates
+  - from: BankingProductDetail
+    to: BankingProductLendingRateV3
+    kind: has_many
+    via: lendingRates
+notes:
+  - >-
+    CDS deliberately provides no hard ID linkage between a product and an
+    account originated from it; productCategory is the only common field.

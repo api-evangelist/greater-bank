@@ -1,0 +1,38 @@
+generated: '2026-07-20'
+method: derived
+source: openapi/greater-bank-cds-banking-products-openapi.yml
+note: >-
+  Lifecycle for Greater Bank's public CDR PRD API. Versioning and deprecation
+  follow the DSB Consumer Data Standards, which the bank implements; no
+  Greater-Bank-specific status page or SLA page was found (CDR availability and
+  performance are reported centrally under the CDR regime, not on a per-bank
+  status page).
+versioning:
+  scheme: header
+  header: x-v
+  min_header: x-min-v
+  current:
+    products_list: '4'      # confirmed live; supported versions 4-5
+    product_detail: '7'
+  policy: >-
+    Endpoint version negotiated per request via x-v (and optional x-min-v);
+    server responds with the highest supported version and returns 406
+    Unsupported Version when none requested are supported.
+  docs: https://consumerdatastandardsaustralia.github.io/standards/#versioning
+deprecation:
+  mechanism: >-
+    Two layers. (1) Endpoint versions are retired via CDS "obsolete versions"
+    (the products operations list obsolete v1-v6 successors). (2) Individual
+    products are deprecated/retired using the effectiveFrom / effectiveTo date
+    fields, which lets a product be marked for future introduction or managed
+    withdrawal without a delete.
+  sunset_header: false      # CDS uses effectiveTo, not RFC 8594 Sunset/Deprecation headers
+  policy_url: https://consumerdatastandardsaustralia.github.io/standards/#versioning
+sla:
+  note: >-
+    Availability/performance are governed by the CDR Non-Functional Requirements
+    (NFRs) applicable to data holders, reported through the CDR regime rather
+    than a Greater Bank status page.
+  url: https://consumerdatastandardsaustralia.github.io/standards/#non-functional-requirements
+status_page: null
+deprecated_operations: []

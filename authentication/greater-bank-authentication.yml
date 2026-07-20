@@ -1,0 +1,31 @@
+generated: '2026-07-20'
+method: derived
+source: openapi/greater-bank-cds-banking-products-openapi.yml
+note: >-
+  The harvested spec declares no securitySchemes because Greater Bank's public
+  CDR Product Reference Data endpoints are unauthenticated by design. The
+  broader CDR consumer-data-sharing tier (not part of this public spec) is
+  secured under the accredited-data-recipient model with OAuth2 + OpenID Connect
+  on the FAPI profile via the CDR register.
+summary:
+  types: [none, oauth2, openIdConnect]
+  public_prd: unauthenticated
+  oauth2_flows: [authorizationCode]     # authenticated CDR data-sharing tier only
+schemes:
+  - name: PublicPRD
+    type: none
+    applies_to: [listBankingProducts, getBankingProductDetail]
+    detail: >-
+      Public, unauthenticated, read-only. Only the mandatory x-v version header
+      is required; no credentials, no OAuth, no API key.
+    sources: [openapi/greater-bank-cds-banking-products-openapi.yml]
+  - name: CDR-ADR-OAuth2-OIDC-FAPI
+    type: oauth2
+    scheme_profile: FAPI 2.0 / OpenID Connect
+    applies_to: [authenticated CDR consumer-data sharing (accounts/balances/transactions/payees)]
+    detail: >-
+      Accredited data recipients obtain consumer consent and access tokens
+      through the CDR register and Greater Bank's info-security endpoints
+      (authorization/token). Documented via the CDR regime, not exposed as a
+      self-serve public developer OAuth surface. Not independently probed.
+    sources: [review.yml]

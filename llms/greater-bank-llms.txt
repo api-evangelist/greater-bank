@@ -1,0 +1,31 @@
+# Greater Bank
+
+> Greater Bank is a customer-owned Australian retail bank (part of Newcastle Greater Mutual Group / NGM Group) and a designated Consumer Data Right (CDR) data holder. Its only public API surface is the unauthenticated CDR Product Reference Data (PRD) API, which lists the bank's publicly offered products conforming to the DSB Consumer Data Standards.
+
+## APIs
+
+- [Greater Bank CDR Product Reference Data API](https://www.greater.com.au/openbanking): Public, unauthenticated PRD API at https://public.cdr.greater.com.au/cds-au/v1/banking/products. GET products list + product detail; requires the x-v version header (confirmed live at x-v 4, supported 4-5).
+
+## Specs
+
+- [OpenAPI (CDS Banking API, shared standard)](openapi/greater-bank-cds-banking-products-openapi.yml)
+- [MCP candidate tools](mcp/greater-bank-mcp.yml)
+- [Overlay (AE enhancements)](overlays/greater-bank-cds-banking-products-overlay.yaml)
+
+## Reference
+
+- [Conventions (versioning, pagination, tracing, errors)](conventions/greater-bank-conventions.yml)
+- [Authentication profile](authentication/greater-bank-authentication.yml)
+- [Error catalog (CDS error list)](errors/greater-bank-problem-types.yml)
+- [Lifecycle & versioning](lifecycle/greater-bank-lifecycle.yml)
+- [Conformance (CDR/CDS)](conformance/greater-bank-conformance.yml)
+- [Data model](data-model/greater-bank-data-model.yml)
+- [Agent skill: look up products](skills/greater-bank-lookup-products.md)
+
+## Docs
+
+- [Open Banking / Access & share your data](https://www.greater.com.au/openbanking)
+- [Consumer Data Standards (DSB)](https://consumerdatastandardsaustralia.github.io/standards/)
+- [Get Products (standards reference)](https://consumerdatastandardsaustralia.github.io/standards/#get-products)
+- [Website](https://www.greater.com.au/)
+- [Terms & Conditions](https://www.greater.com.au/termsandconditions)

@@ -1,0 +1,52 @@
+generated: '2026-07-20'
+method: derived
+source: openapi/greater-bank-cds-banking-products-openapi.yml
+note: >-
+  Cross-cutting request/response semantics for Greater Bank's public CDR PRD
+  API, derived from the DSB Consumer Data Standards spec and the confirmed live
+  behaviour of https://public.cdr.greater.com.au/cds-au/v1/banking/products.
+authentication:
+  style: none
+  detail: >-
+    The public Product Reference Data endpoints are unauthenticated and
+    read-only. Authenticated CDR consumer-data sharing (accounts, balances,
+    transactions) runs on the accredited-data-recipient OAuth2/OIDC FAPI model
+    via the CDR register and is out of scope for this public surface.
+  cross_ref: authentication/greater-bank-authentication.yml
+versioning:
+  style: header
+  request_headers: [x-v (required), x-min-v (optional)]
+  response_headers: [x-v]
+  cross_ref: lifecycle/greater-bank-lifecycle.yml
+idempotency:
+  supported: false
+  detail: >-
+    The public surface is GET-only (read-only PRD); there is no
+    state-changing/idempotency-key contract to document.
+pagination:
+  style: page-number
+  request_params: [page, page-size]
+  defaults: { page: 1, page-size: 25 }
+  response_links: [self, first, prev, next, last]   # LinksPaginated
+  response_meta: [totalRecords, totalPages]         # MetaPaginated
+request_tracing:
+  header: x-fapi-interaction-id
+  detail: >-
+    RFC 4122 UUID correlation id. If supplied it is echoed in the response; if
+    omitted the data holder generates one and returns it, per the FAPI profile.
+filtering:
+  params: [effective (CURRENT/FUTURE/ALL), updated-since, brand, product-category]
+error_envelope:
+  media_type: application/json
+  schema: ResponseErrorListV2
+  shape: '{ "errors": [ { "code", "title", "detail", "meta"? } ] }'
+  cross_ref: errors/greater-bank-problem-types.yml
+cors:
+  detail: >-
+    Public PRD responses include access-control-allow-origin: * and
+    access-control-allow-headers including Range, x-v, x-min-v (confirmed on the
+    live endpoint), enabling browser-based data-recipient tooling.
+rate_limiting:
+  detail: >-
+    No public per-bank rate-limit signalling documented; traffic-management
+    thresholds fall under the CDR NFRs rather than published response headers.

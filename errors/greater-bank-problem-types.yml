@@ -1,0 +1,68 @@
+generated: '2026-07-20'
+method: derived
+source: openapi/greater-bank-cds-banking-products-openapi.yml
+format: cds-error-list
+note: >-
+  Greater Bank's CDR PRD API does NOT use RFC 9457 application/problem+json. It
+  returns the DSB Consumer Data Standards ResponseErrorListV2 envelope as
+  application/json. Problem entries below are DERIVED from the 4xx/406/422
+  responses declared on the two public product operations (listBankingProducts,
+  getBankingProductDetail); the URN codes follow the DSB CDS standard error-code
+  registry that every Australian data holder implements (the spec response
+  descriptions link to these exact error anchors).
+envelope:
+  media_type: application/json
+  schema: ResponseErrorListV2
+  shape: '{ "errors": [ { "code": <string>, "title": <string>, "detail": <string>, "meta"?: {} } ] }'
+  required_fields: [code, title, detail]
+problems:
+  - status: 400
+    code: urn:au-cds:error:cds-all:Field/Invalid
+    title: Invalid Field
+    remediation: Correct the malformed query field (e.g. product-category, effective, brand) to a valid value.
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
+  - status: 400
+    code: urn:au-cds:error:cds-all:Field/Missing
+    title: Missing Required Field
+    remediation: Supply the required field that was omitted from the request.
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
+  - status: 400
+    code: urn:au-cds:error:cds-all:Header/Missing
+    title: Missing Required Header
+    remediation: Include the mandatory x-v version header on the request.
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
+  - status: 400
+    code: urn:au-cds:error:cds-all:Header/InvalidVersion
+    title: Invalid Version
+    remediation: Set x-v (and optional x-min-v) to a positive integer.
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
+  - status: 400
+    code: urn:au-cds:error:cds-all:Field/InvalidDateTime
+    title: Invalid Date
+    remediation: Provide updated-since as a valid DateTimeString (ISO 8601).
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
+  - status: 400
+    code: urn:au-cds:error:cds-all:Field/InvalidPageSize
+    title: Invalid Page Size
+    remediation: Provide page-size as a positive integer within allowed bounds.
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
+  - status: 404
+    code: urn:au-cds:error:cds-all:Resource/Unavailable
+    title: Unavailable Resource
+    remediation: The requested productId is not currently available.
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#getBankingProductDetail
+  - status: 404
+    code: urn:au-cds:error:cds-all:Resource/Invalid
+    title: Invalid Resource
+    remediation: The supplied productId is not a valid resource identifier.
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#getBankingProductDetail
+  - status: 406
+    code: urn:au-cds:error:cds-all:Header/UnsupportedVersion
+    title: Unsupported Version
+    remediation: Request a supported endpoint version via x-v (products list supports 4-5; confirmed live at 4).
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
+  - status: 422
+    code: urn:au-cds:error:cds-all:Field/InvalidPage
+    title: Invalid Page
+    remediation: Requested page is out of range for the current result set.
+    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
