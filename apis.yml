@@ -1,0 +1,71 @@
+aid: greater-bank
+url: https://raw.githubusercontent.com/api-evangelist/greater-bank/refs/heads/main/apis.yml
+name: Greater Bank
+kind: company
+description: Greater Bank is a customer-owned Australian retail bank headquartered in
+  Newcastle, New South Wales, offering everyday transaction and savings accounts, term
+  deposits, home loans, personal loans, and credit cards to personal and business customers.
+  In March 2023 Greater Bank merged with Newcastle Permanent to form Newcastle Greater
+  Mutual Group (NGM Group), one of Australia's largest customer-owned mutual banking
+  organisations, while continuing to trade under the Greater Bank brand. As an Authorised
+  Deposit-taking Institution (ADI) it is a designated data holder under Australia's
+  Consumer Data Right (CDR / Open Banking) and exposes a public, unauthenticated Product
+  Reference Data (PRD) API conforming to the Data Standards Body (DSB) Consumer Data
+  Standards. Consumer-data sharing beyond PRD runs on the accredited CDR data-recipient
+  (ADR) model with OAuth2/OpenID Connect FAPI-profile security.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Financial
+- Banks
+- Open Banking
+- CDR
+- Consumer Banking
+- Australia
+- Mutual
+- Product Reference Data
+created: '2026-07-20'
+modified: '2026-07-20'
+specificationVersion: '0.19'
+apis:
+- aid: greater-bank:greater-bank-cdr-product-reference-data-api
+  name: Greater Bank CDR Product Reference Data API
+  tags:
+  - CDR
+  - Open Banking
+  - Product Reference Data
+  - Banking Products
+  - Australia
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://www.greater.com.au/openbanking
+  baseURL: https://public.cdr.greater.com.au/cds-au/v1/banking/products
+  properties:
+  - url: https://www.greater.com.au/openbanking
+    type: Documentation
+  - url: https://consumerdatastandardsaustralia.github.io/standards/#get-products
+    type: APIReference
+  - url: openapi/greater-bank-cds-banking-products-openapi.yml
+    type: OpenAPI
+  description: Public, unauthenticated Consumer Data Right Product Reference Data (PRD)
+    API for Greater Bank, served under the standard CDS base path cds-au/v1/banking/products.
+    Confirmed live returning HTTP 200 with an x-v response version of 4 (supported
+    versions 4-5) and a data.products array covering transaction accounts, savings
+    accounts, term deposits, home loans, personal loans, and credit cards under brand
+    "GB" / brandName "Greater Bank". Exposes GET /banking/products (list, with filters
+    and pagination) and GET /banking/products/{productId} (detail), each requiring the
+    x-v version header. Conforms to the DSB Consumer Data Standards CDR Banking API
+    contract; the harvested OpenAPI is the shared CDS standard, not a Greater Bank
+    proprietary specification.
+common:
+- type: Website
+  url: https://www.greater.com.au/
+- type: Documentation
+  url: https://www.greater.com.au/openbanking
+- type: APIReference
+  url: https://consumerdatastandardsaustralia.github.io/standards/
+- type: TermsOfService
+  url: https://www.greater.com.au/termsandconditions
+- type: LinkedIn
+  url: https://www.linkedin.com/company/greater-bank
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

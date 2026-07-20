@@ -1,0 +1,77 @@
+aid: greater-bank
+name: Greater Bank
+review:
+  question: Does Greater Bank expose a confirmed public CDR Product Reference Data API, and is there any broader developer portal or proprietary API contract beyond the shared Consumer Data Standards?
+  answer: true
+  date: '2026-07-20'
+  reviewer: API Evangelist
+  cdrPrdConfirmed: true
+  developerPortal: false
+  specProvenance: DSB Consumer Data Standards (shared CDS "CDR Banking API"), not Greater Bank proprietary
+findings:
+  summary: |
+    Greater Bank is a customer-owned Australian ADI (part of Newcastle Greater
+    Mutual Group / NGM Group since its March 2023 merger with Newcastle Permanent)
+    and a designated Consumer Data Right (CDR) data holder. Its public,
+    unauthenticated Product Reference Data (PRD) API is CONFIRMED LIVE at
+    https://public.cdr.greater.com.au/cds-au/v1/banking/products, returning
+    HTTP 200 with an x-v response version of 4 (a request with x-v: 3 returns
+    HTTP 406 "Unsupported Version - Supported versions: 4-5") and a JSON
+    data.products array under brand "GB" / brandName "Greater Bank". The endpoint
+    conforms to the Data Standards Body (DSB) Consumer Data Standards CDR Banking
+    API and honours the mandatory x-v version header and CORS headers
+    (access-control-allow-origin: *; access-control-allow-headers: Range,x-v,x-min-v).
+
+    The public surface is limited to CDR Product Reference Data (unauthenticated,
+    read-only, no consumer data). Beyond PRD, consumer-data sharing follows the
+    accredited CDR data-recipient (ADR) model secured with OAuth2 / OpenID Connect
+    under the FAPI profile via the CDR register and info-security endpoints;
+    Greater Bank does not publish a self-serve consumer developer portal. A probe
+    of developer.greater.com.au did not resolve (no such host), and there is no
+    Up-style or CommBank/NAB-style proprietary personal-banking developer API for
+    this brand. The consumer-facing landing page is the Open Banking page at
+    https://www.greater.com.au/openbanking.
+
+    No Greater Bank proprietary OpenAPI contract is published. The harvested spec
+    is the shared DSB Consumer Data Standards "CDR Banking API" OpenAPI 3.0.3
+    document (license MIT, contact contact@dsb.gov.au) that every Australian data
+    holder implements for these endpoints - it is the standard, not a
+    bank-specific contract, and is stored as such.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://public.cdr.greater.com.au/cds-au/v1/banking/products
+      documented: true
+      note: Public CDR Product Reference Data API; unauthenticated; requires x-v request header (confirmed x-v response 4, supported 4-5).
+    - protocol: OAuth2/OIDC-FAPI
+      scheme: https
+      documented: true
+      note: Authenticated consumer-data sharing runs on the CDR accredited-data-recipient model (OAuth2 + OpenID Connect FAPI profile) via the CDR register, not a self-serve public API. Not independently probed in this bootstrap.
+  endpointsConfirmed:
+    - GET https://public.cdr.greater.com.au/cds-au/v1/banking/products
+  endpointsStandardNotProbed:
+    - GET https://public.cdr.greater.com.au/cds-au/v1/banking/products/{productId}
+  httpProbes:
+    - request: 'GET /cds-au/v1/banking/products?page-size=2 (x-v: 4)'
+      status: 200
+      note: JSON data.products array returned; x-v response header = 4.
+    - request: 'GET /cds-au/v1/banking/products?page-size=1 (x-v: 3)'
+      status: 406
+      note: 'urn:au-cds:error:cds-all:Header/UnsupportedVersion - Supported versions 4-5.'
+    - request: GET https://developer.greater.com.au/
+      status: 000
+      note: Host does not resolve - no separate developer portal.
+sources:
+  - url: https://www.greater.com.au/openbanking
+    type: Documentation
+    note: Greater Bank "Access and share your data with Open Banking" page (bot-protected to automated fetch; confirmed as the official Open Banking landing page via search and by the PRD API's own termsUri/overviewUri pointing to www.greater.com.au).
+  - url: https://public.cdr.greater.com.au/cds-au/v1/banking/products
+    type: APIReference
+    note: Live public CDR PRD endpoint; confirmed HTTP 200 with x-v 4 and data.products array.
+  - url: https://consumerdatastandardsaustralia.github.io/standards/includes/swagger/cds_banking.yaml
+    type: OpenAPI
+    note: Source of the harvested spec - shared DSB Consumer Data Standards CDR Banking API (OpenAPI 3.0.3, MIT). Saved verbatim to openapi/greater-bank-cds-banking-products-openapi.yml.
+actions:
+  openapiPath: openapi/greater-bank-cds-banking-products-openapi.yml
+  openapiProvenance: DSB Consumer Data Standards (shared CDS standard, not bank-proprietary)
+  apisYmlCreated: true
