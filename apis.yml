@@ -24,7 +24,7 @@ tags:
 - Mutual
 - Product Reference Data
 created: '2026-07-20'
-modified: '2026-07-20'
+modified: '2026-07-21'
 specificationVersion: '0.19'
 apis:
 - aid: greater-bank:greater-bank-cdr-product-reference-data-api
@@ -52,9 +52,129 @@ apis:
     accounts, term deposits, home loans, personal loans, and credit cards under brand
     "GB" / brandName "Greater Bank". Exposes GET /banking/products (list, with filters
     and pagination) and GET /banking/products/{productId} (detail), each requiring the
-    x-v version header. Conforms to the DSB Consumer Data Standards CDR Banking API
-    contract; the harvested OpenAPI is the shared CDS standard, not a Greater Bank
-    proprietary specification.
+    x-v version header. The public host also serves the unauthenticated CDR discovery
+    endpoint GET /cds-au/v1/discovery/status (confirmed HTTP 200, "All services operational").
+    Conforms to the DSB Consumer Data Standards CDR Banking API contract; the harvested
+    OpenAPI is the shared CDS standard, not a Greater Bank proprietary specification.
+- aid: greater-bank:greater-bank-cdr-accounts-balances-api
+  name: Greater Bank CDR Accounts & Balances API
+  tags:
+  - CDR
+  - Open Banking
+  - Accounts
+  - Balances
+  - Australia
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://www.greater.com.au/openbanking
+  baseURL: https://public.cdr.greater.com.au/cds-au/v1/banking/accounts
+  properties:
+  - url: https://www.greater.com.au/openbanking
+    type: Documentation
+  - url: https://consumerdatastandardsaustralia.github.io/standards/#get-accounts
+    type: APIReference
+  - url: openapi/greater-bank-cds-banking-products-openapi.yml
+    type: OpenAPI
+  description: Consumer-authorized Consumer Data Right banking account and balance endpoints
+    that Greater Bank, as a designated CDR data holder (ADI), is required to implement
+    under the DSB Consumer Data Standards CDR Banking API. Covers GET /banking/accounts
+    (list accounts), GET /banking/accounts/balances (bulk balances), POST /banking/accounts/balances
+    (balances for a specified list), GET /banking/accounts/{accountId}/balance (single
+    account balance), and GET /banking/accounts/{accountId} (account detail). These
+    endpoints are NOT served on the public host (GET /banking/accounts returns HTTP 404
+    there); they run on the data holder's authenticated MTLS resource infrastructure and
+    are reached only through the accredited data-recipient (ADR) OAuth2/OpenID Connect
+    FAPI handshake brokered by the ACCC CDR Register. The baseURL shown reflects the
+    standardized CDS base path (cds-au/v1/banking); the actual ResourceBaseUri is issued
+    per data-holder brand via the Register and is not publicly probeable. The referenced
+    OpenAPI is the shared DSB CDS standard, not a Greater Bank proprietary specification.
+- aid: greater-bank:greater-bank-cdr-transactions-api
+  name: Greater Bank CDR Transactions API
+  tags:
+  - CDR
+  - Open Banking
+  - Transactions
+  - Accounts
+  - Australia
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://www.greater.com.au/openbanking
+  baseURL: https://public.cdr.greater.com.au/cds-au/v1/banking/accounts
+  properties:
+  - url: https://www.greater.com.au/openbanking
+    type: Documentation
+  - url: https://consumerdatastandardsaustralia.github.io/standards/#get-transactions-for-account
+    type: APIReference
+  - url: openapi/greater-bank-cds-banking-products-openapi.yml
+    type: OpenAPI
+  description: Consumer-authorized Consumer Data Right transaction endpoints that Greater
+    Bank implements as a designated CDR data holder under the DSB Consumer Data Standards
+    CDR Banking API. Covers GET /banking/accounts/{accountId}/transactions (list, with
+    date, amount and text filters plus pagination) and GET /banking/accounts/{accountId}/transactions/{transactionId}
+    (transaction detail). Like all consumer data (non-PRD) endpoints these are served
+    only over the data holder's authenticated MTLS resource infrastructure via the
+    accredited data-recipient (ADR) OAuth2/OpenID Connect FAPI-profile handshake; they
+    are not served on the public PRD host. The baseURL reflects the standardized CDS
+    base path; the true ResourceBaseUri is Register-issued and not publicly probeable.
+    The referenced OpenAPI is the shared DSB CDS standard, not a Greater Bank proprietary
+    specification.
+- aid: greater-bank:greater-bank-cdr-direct-debits-scheduled-payments-api
+  name: Greater Bank CDR Direct Debits & Scheduled Payments API
+  tags:
+  - CDR
+  - Open Banking
+  - Direct Debits
+  - Scheduled Payments
+  - Australia
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://www.greater.com.au/openbanking
+  baseURL: https://public.cdr.greater.com.au/cds-au/v1/banking/accounts
+  properties:
+  - url: https://www.greater.com.au/openbanking
+    type: Documentation
+  - url: https://consumerdatastandardsaustralia.github.io/standards/#get-direct-debits-for-account
+    type: APIReference
+  - url: openapi/greater-bank-cds-banking-products-openapi.yml
+    type: OpenAPI
+  description: Consumer-authorized Consumer Data Right direct-debit and scheduled-payment
+    endpoints that Greater Bank implements as a designated CDR data holder under the DSB
+    Consumer Data Standards CDR Banking API. Covers GET /banking/accounts/{accountId}/direct-debits
+    and POST /banking/accounts/direct-debits (direct-debit authorisations for one or many
+    accounts); GET /banking/accounts/{accountId}/payments/scheduled and POST /banking/payments/scheduled
+    (scheduled payments for one or many accounts); and GET /banking/accounts/{accountId}/payments/plans
+    and POST /banking/accounts/payments/plans (payment plan schedules). These consumer
+    data endpoints are served only over the data holder's authenticated MTLS resource
+    infrastructure via the accredited data-recipient (ADR) OAuth2/OpenID Connect FAPI
+    handshake, not on the public PRD host. The baseURL reflects the standardized CDS base
+    path; the true ResourceBaseUri is Register-issued and not publicly probeable. The
+    referenced OpenAPI is the shared DSB CDS standard, not a Greater Bank proprietary
+    specification.
+- aid: greater-bank:greater-bank-cdr-payees-api
+  name: Greater Bank CDR Payees API
+  tags:
+  - CDR
+  - Open Banking
+  - Payees
+  - Accounts
+  - Australia
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://www.greater.com.au/openbanking
+  baseURL: https://public.cdr.greater.com.au/cds-au/v1/banking/payees
+  properties:
+  - url: https://www.greater.com.au/openbanking
+    type: Documentation
+  - url: https://consumerdatastandardsaustralia.github.io/standards/#get-payees
+    type: APIReference
+  - url: openapi/greater-bank-cds-banking-products-openapi.yml
+    type: OpenAPI
+  description: Consumer-authorized Consumer Data Right payee endpoints that Greater Bank
+    implements as a designated CDR data holder under the DSB Consumer Data Standards CDR
+    Banking API. Covers GET /banking/payees (list of the customer's saved payees, with
+    pagination) and GET /banking/payees/{payeeId} (payee detail, including domestic,
+    international, and BPAY payee sub-schemas). These consumer data endpoints are served
+    only over the data holder's authenticated MTLS resource infrastructure via the
+    accredited data-recipient (ADR) OAuth2/OpenID Connect FAPI-profile handshake, not on
+    the public PRD host. The baseURL reflects the standardized CDS base path; the true
+    ResourceBaseUri is Register-issued and not publicly probeable. The referenced OpenAPI
+    is the shared DSB CDS standard, not a Greater Bank proprietary specification.
 common:
 - type: AgenticAccess
   url: agentic-access/greater-bank-agentic-access.yml
@@ -86,8 +206,16 @@ common:
   url: https://www.greater.com.au/
 - type: Documentation
   url: https://www.greater.com.au/openbanking
+- type: GettingStarted
+  url: https://www.greater.com.au/openbanking
 - type: APIReference
   url: https://consumerdatastandardsaustralia.github.io/standards/
+- type: PrivacyPolicy
+  url: https://www.greater.com.au/privacy-policy
+- type: CDRPolicy
+  url: https://www.greater.com.au/globalassets/open-banking/cdr-policy/cdr-policy.pdf
+- type: Support
+  url: https://www.greater.com.au/help
 - type: TermsOfService
   url: https://www.greater.com.au/termsandconditions
 - type: LinkedIn
