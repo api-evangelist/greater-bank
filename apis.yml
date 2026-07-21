@@ -24,7 +24,7 @@ tags:
 - Mutual
 - Product Reference Data
 created: '2026-07-20'
-modified: '2026-07-21'
+modified: '2026-07-22'
 specificationVersion: '0.19'
 apis:
 - aid: greater-bank:greater-bank-cdr-product-reference-data-api
@@ -188,6 +188,8 @@ common:
   url: errors/greater-bank-problem-types.yml
 - type: Lifecycle
   url: lifecycle/greater-bank-lifecycle.yml
+- type: StatusPage
+  url: https://public.cdr.greater.com.au/cds-au/v1/discovery/status
 - type: Deprecation
   url: https://consumerdatastandardsaustralia.github.io/standards/#versioning
 - type: Conformance
@@ -202,6 +204,9 @@ common:
   url: overlays/greater-bank-cds-banking-products-overlay.yaml
 - type: AgentSkill
   url: skills/_index.yml
+- type: Arazzo
+  name: Greater Bank product lookup
+  url: arazzo/greater-bank-product-lookup.yml
 - type: Website
   url: https://www.greater.com.au/
 - type: Documentation

@@ -1,12 +1,13 @@
-generated: '2026-07-20'
-method: derived
-source: openapi/greater-bank-cds-banking-products-openapi.yml
+generated: '2026-07-21'
+method: probed
+source: openapi/greater-bank-cds-banking-products-openapi.yml + live CDR discovery probe
 note: >-
   Lifecycle for Greater Bank's public CDR PRD API. Versioning and deprecation
-  follow the DSB Consumer Data Standards, which the bank implements; no
-  Greater-Bank-specific status page or SLA page was found (CDR availability and
-  performance are reported centrally under the CDR regime, not on a per-bank
-  status page).
+  follow the DSB Consumer Data Standards, which the bank implements. Greater Bank
+  exposes a live, per-brand, machine-readable CDR status surface (the mandated
+  CDS discovery/status + discovery/outages endpoints), probed operational below;
+  broader CDR availability/performance is also governed centrally under the CDR
+  Non-Functional Requirements regime.
 versioning:
   scheme: header
   header: x-v
@@ -34,5 +35,22 @@ sla:
     (NFRs) applicable to data holders, reported through the CDR regime rather
     than a Greater Bank status page.
   url: https://consumerdatastandardsaustralia.github.io/standards/#non-functional-requirements
-status_page: null
+status_page: https://public.cdr.greater.com.au/cds-au/v1/discovery/status
+status_endpoints:
+  - path: /cds-au/v1/discovery/status
+    url: https://public.cdr.greater.com.au/cds-au/v1/discovery/status
+    probed_status: 200
+    probed_on: '2026-07-21'
+    last_response: { status: OK, explanation: "All services operational" }
+    note: >-
+      CDS-mandated unauthenticated status endpoint (GetStatus). Machine-readable
+      per-brand health surface returning status OK|PARTIAL_FAILURE|UNAVAILABLE|SCHEDULED_OUTAGE.
+  - path: /cds-au/v1/discovery/outages
+    url: https://public.cdr.greater.com.au/cds-au/v1/discovery/outages
+    probed_status: 200
+    probed_on: '2026-07-21'
+    last_response: { outages: [] }
+    note: >-
+      CDS-mandated unauthenticated planned-outages endpoint (GetOutages); empty
+      list at probe time (no scheduled outages).
 deprecated_operations: []

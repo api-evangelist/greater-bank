@@ -1,0 +1,10 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/greater-bank-cds-banking-products-openapi.yml
+workflows:
+  - file: greater-bank-product-lookup.yml
+    workflowId: lookupBankingProduct
+    title: Greater Bank product lookup
+    summary: >-
+      List Greater Bank's public CDR PRD offerings, then fetch full detail for a
+      product. Runs unauthenticated against the live public CDS host.
