@@ -2,30 +2,37 @@ generated: '2026-07-20'
 method: derived
 status: candidate
 source: openapi/greater-bank-cds-banking-products-openapi.yml
-note: >-
-  No official Greater Bank / CDR MCP server is published. This is a CANDIDATE
-  tool list derived from the two public, unauthenticated CDR Product Reference
-  Data (PRD) operations Greater Bank actually exposes at
-  https://public.cdr.greater.com.au/cds-au/v1/banking/products. The remaining
-  CDS Banking operations (accounts, balances, transactions, payees, etc.) are
-  authenticated CDR consumer-data-sharing endpoints gated behind the accredited
-  data-recipient (ADR) OAuth2/OIDC FAPI model and are NOT part of this public
+note: No official Greater Bank / CDR MCP server is published. This is a CANDIDATE tool list derived from
+  the two public, unauthenticated CDR Product Reference Data (PRD) operations Greater Bank actually exposes
+  at https://public.cdr.greater.com.au/cds-au/v1/banking/products. The remaining CDS Banking operations
+  (accounts, balances, transactions, payees, etc.) are authenticated CDR consumer-data-sharing endpoints
+  gated behind the accredited data-recipient (ADR) OAuth2/OIDC FAPI model and are NOT part of this public
   surface, so they are intentionally excluded from the candidate tool set.
 server:
   name: greater-bank-cdr-products
   transport: http
   base_url: https://public.cdr.greater.com.au/cds-au/v1
   required_headers:
-    - name: x-v
-      description: Mandatory endpoint version header. Supported product versions 4-5 (list) / detail v7; server responds with highest supported. Omitting it yields 400; an unsupported value yields 406.
+  - name: x-v
+    description: Mandatory endpoint version header. Supported product versions 4-5 (list) / detail v7;
+      server responds with highest supported. Omitting it yields 400; an unsupported value yields 406.
 tools:
-  - name: list_banking_products
-    description: List publicly offered Greater Bank banking products (transaction/savings accounts, term deposits, home loans, personal loans, credit cards) with filtering by effective status, brand, product-category, updated-since, and standard page/page-size pagination.
-    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
-    method: GET
-    path: /banking/products
-  - name: get_banking_product_detail
-    description: Retrieve full detail for a single Greater Bank product by productId, including rates, fees, features, eligibility and additional-information URIs.
-    source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#getBankingProductDetail
-    method: GET
-    path: /banking/products/{productId}
+- name: list_banking_products
+  description: List publicly offered Greater Bank banking products (transaction/savings accounts, term
+    deposits, home loans, personal loans, credit cards) with filtering by effective status, brand, product-category,
+    updated-since, and standard page/page-size pagination.
+  source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#listBankingProducts
+  method: GET
+  path: /banking/products
+- name: get_banking_product_detail
+  description: Retrieve full detail for a single Greater Bank product by productId, including rates, fees,
+    features, eligibility and additional-information URIs.
+  source_operation: openapi/greater-bank-cds-banking-products-openapi.yml#getBankingProductDetail
+  method: GET
+  path: /banking/products/{productId}
+deployment:
+  mode: none
+  verified: derived
+  tools: 2
+  checked: '2026-08-12'
+  source: catalog MCP census
