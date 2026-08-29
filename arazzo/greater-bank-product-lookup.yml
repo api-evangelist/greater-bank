@@ -7,55 +7,55 @@ info:
     retrieve the full detail for one product. Runs unauthenticated against the
     live public CDS host (no consumer consent / ADR handshake required for PRD).
 sourceDescriptions:
-  - name: cdsBanking
-    url: ../openapi/greater-bank-cds-banking-products-openapi.yml
-    type: openapi
+- name: bankingProductsApi
+  url: ../openapi/greater-bank-banking-products-api-openapi.yml
+  type: openapi
 workflows:
-  - workflowId: lookupBankingProduct
-    summary: List products, then fetch detail for the first returned productId.
-    description: >-
-      Two-step PRD read against Greater Bank's public host
-      (public.cdr.greater.com.au/cds-au/v1). Both endpoints require the x-v
-      version header; PRD product list is served at supported versions 4-5 and
-      product detail at version 7.
-    inputs:
-      type: object
-      properties:
-        productCategory:
-          type: string
-          description: Optional product-category filter (e.g. TRANS_AND_SAVINGS_ACCOUNTS).
-        xv:
-          type: string
-          default: "4"
-    steps:
-      - stepId: listProducts
-        description: Get the list of openly offered banking products.
-        operationId: listBankingProducts
-        parameters:
-          - name: x-v
-            in: header
-            value: $inputs.xv
-          - name: product-category
-            in: query
-            value: $inputs.productCategory
-        successCriteria:
-          - condition: $statusCode == 200
-        outputs:
-          firstProductId: $response.body#/data/products/0/productId
-      - stepId: getProductDetail
-        description: Fetch full detail for the first product returned above.
-        operationId: getBankingProductDetail
-        parameters:
-          - name: productId
-            in: path
-            value: $steps.listProducts.outputs.firstProductId
-          - name: x-v
-            in: header
-            value: "7"
-        successCriteria:
-          - condition: $statusCode == 200
-        outputs:
-          productDetail: $response.body#/data
+- workflowId: lookupBankingProduct
+  summary: List products, then fetch detail for the first returned productId.
+  description: >-
+    Two-step PRD read against Greater Bank's public host
+    (public.cdr.greater.com.au/cds-au/v1). Both endpoints require the x-v
+    version header; PRD product list is served at supported versions 4-5 and
+    product detail at version 7.
+  inputs:
+    type: object
+    properties:
+      productCategory:
+        type: string
+        description: Optional product-category filter (e.g. TRANS_AND_SAVINGS_ACCOUNTS).
+      xv:
+        type: string
+        default: "4"
+  steps:
+  - stepId: listProducts
+    description: Get the list of openly offered banking products.
+    operationId: listBankingProducts
+    parameters:
+    - name: x-v
+      in: header
+      value: $inputs.xv
+    - name: product-category
+      in: query
+      value: $inputs.productCategory
+    successCriteria:
+    - condition: $statusCode == 200
     outputs:
-      productId: $steps.listProducts.outputs.firstProductId
-      productDetail: $steps.getProductDetail.outputs.productDetail
+      firstProductId: $response.body#/data/products/0/productId
+  - stepId: getProductDetail
+    description: Fetch full detail for the first product returned above.
+    operationId: getBankingProductDetail
+    parameters:
+    - name: productId
+      in: path
+      value: $steps.listProducts.outputs.firstProductId
+    - name: x-v
+      in: header
+      value: "7"
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      productDetail: $response.body#/data
+  outputs:
+    productId: $steps.listProducts.outputs.firstProductId
+    productDetail: $steps.getProductDetail.outputs.productDetail
