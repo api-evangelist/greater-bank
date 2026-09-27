@@ -724,60 +724,10 @@ paths:
       x-version: '1'
 components:
   schemas:
-    BankingDigitalWalletPayee:
-      example:
-        identifier: identifier
-        provider: PAYPAL_AU
-        name: name
-        type: EMAIL
-      properties:
-        name:
-          description: The display name of the wallet as given by the customer, else a default value defined by the data holder.
-          type: string
-        identifier:
-          description: The identifier of the digital wallet (dependent on type).
-          type: string
-        type:
-          description: The type of the digital wallet identifier.
-          enum:
-          - EMAIL
-          - CONTACT_NAME
-          - TELEPHONE
-          type: string
-        provider:
-          description: The provider of the digital wallet.
-          enum:
-          - PAYPAL_AU
-          - OTHER
-          type: string
-      required:
-      - identifier
-      - name
-      - provider
-      - type
-      type: object
-    BankingInstalmentPlanSchedule:
-      example:
-        amountDue: amountDue
-        isPaid: false
-        dueDate: dueDate
-      properties:
-        amountDue:
-          description: Amount due with this repayment.
-          type: string
-          x-cds-type: AmountString
-        dueDate:
-          description: Date this repayment is or was due.
-          type: string
-          x-cds-type: DateString
-        isPaid:
-          default: false
-          description: Whether the associated _amountDue_ has been paid or is otherwise considered as not outstanding. `false` is assumed if absent.
-          type: boolean
-      required:
-      - amountDue
-      - dueDate
-      type: object
+    BankingAccountId:
+      description: A unique identifier for a Banking account, generated according to [CDR ID Permanence](#id-permanence) requirements.
+      type: string
+      x-cds-type: ASCIIString
     LinksPaginated:
       example:
         next: next
@@ -814,532 +764,69 @@ components:
       - next
       - first
       - last
-    BankingInternationalPayee_beneficiaryDetails:
+    BankingScheduledPaymentRecurrenceLastWeekday:
+      description: Indicates that the schedule of payments is defined according to the last occurrence of a specific weekday in an interval. Mandatory if the _recurrenceUType_ value is `lastWeekDay`.
       example:
-        country: country
-        name: name
-        message: message
+        paymentsRemaining: 1
+        interval: interval
+        finalPaymentDate: finalPaymentDate
+        lastWeekDay: FRI
+        nonBusinessDayTreatment: 'ON'
       properties:
-        name:
-          description: Name of the beneficiary.
-          type: string
-        country:
-          description: Country where the beneficiary resides. A valid [ISO 3166 Alpha-3](https://www.iso.org/iso-3166-country-codes.html) country code.
-          type: string
-          x-cds-type: ExternalRef
-        message:
-          description: Response message for the payment.
-          type: string
-      required:
-      - country
-      type: object
-    ResponseBankingInstalmentPlanList:
-      example:
-        data:
-          plans:
-          - amount: amount
-            planCharge: planCharge
-            planReference: planReference
-            instalmentInterval: instalmentInterval
-            creationDate: creationDate
-            merchantName: merchantName
-            planCurrency: AUD
-            duration: duration
-            accountId: ''
-            schedule:
-            - amountDue: amountDue
-              isPaid: false
-              dueDate: dueDate
-            - amountDue: amountDue
-              isPaid: false
-              dueDate: dueDate
-            planRate: planRate
-            merchantCategoryCode: merchantCategoryCode
-            planNickname: planNickname
-            planId: ''
-          - amount: amount
-            planCharge: planCharge
-            planReference: planReference
-            instalmentInterval: instalmentInterval
-            creationDate: creationDate
-            merchantName: merchantName
-            planCurrency: AUD
-            duration: duration
-            accountId: ''
-            schedule:
-            - amountDue: amountDue
-              isPaid: false
-              dueDate: dueDate
-            - amountDue: amountDue
-              isPaid: false
-              dueDate: dueDate
-            planRate: planRate
-            merchantCategoryCode: merchantCategoryCode
-            planNickname: planNickname
-            planId: ''
-        meta:
-          totalRecords: 0
-          totalPages: 6
-        links:
-          next: next
-          last: last
-          prev: prev
-          self: self
-          first: first
-      properties:
-        data:
-          $ref: '#/components/schemas/ResponseBankingInstalmentPlanList_data'
-        links:
-          $ref: '#/components/schemas/LinksPaginated'
-        meta:
-          $ref: '#/components/schemas/MetaPaginated'
-      required:
-      - data
-      - links
-      - meta
-      type: object
-    BankingScheduledPaymentId:
-      description: A unique identifier for a Banking scheduled payment, generated according to [CDR ID Permanence](#id-permanence) requirements.
-      type: string
-      x-cds-type: ASCIIString
-    BankingInstalmentPlan:
-      example:
-        amount: amount
-        planCharge: planCharge
-        planReference: planReference
-        instalmentInterval: instalmentInterval
-        creationDate: creationDate
-        merchantName: merchantName
-        planCurrency: AUD
-        duration: duration
-        accountId: ''
-        schedule:
-        - amountDue: amountDue
-          isPaid: false
-          dueDate: dueDate
-        - amountDue: amountDue
-          isPaid: false
-          dueDate: dueDate
-        planRate: planRate
-        merchantCategoryCode: merchantCategoryCode
-        planNickname: planNickname
-        planId: ''
-      properties:
-        accountId:
-          allOf:
-          - $ref: '#/components/schemas/BankingAccountId'
-          description: Unique identifier for the account.
-        planId:
-          allOf:
-          - $ref: '#/components/schemas/BankingInstalmentPlanId'
-          description: Unique identifier for this plan in accordance with ID Permanence requirements.
-        planReference:
-          description: Unique purchase or order number for this plan, aligned to other channels.
-          type: string
-        merchantName:
-          description: Name of the merchant associated with the instalment plan.
-          type: string
-        merchantCategoryCode:
-          description: The merchant category code (MCC) for the merchant associated with the instalment plan.
-          type: string
-        planNickname:
-          description: The short display name of the plan as provided by the customer. Where a customer has not provided a nickname, a display name derived by the data holder consistent with other channels.
-          type: string
-        creationDate:
-          description: The date the plan was created.
+        finalPaymentDate:
+          description: The limit date after which no more payments should be made using this schedule. If both _finalPaymentDate_ and _paymentsRemaining_ are present then payments will stop according to the most constraining value. If neither field is present the payments will continue indefinitely.
           type: string
           x-cds-type: DateString
-        amount:
-          description: The original transaction amount the instalment plan was created for, including any upfront payment. E.g., For a $100 purchase split into four repayments, this would be `100.00`.
-          type: string
-          x-cds-type: AmountString
-        planCurrency:
-          default: AUD
-          description: The currency of the plan amount. If absent assumed to be `AUD`.
-          type: string
-          x-cds-type: CurrencyString
-        planCharge:
-          description: Any charges incorporated into the scheduled amounts due, excluding other fees. E.g., If the consumer agrees to repay a $100 purchase plus a $5 charge split across four instalments, this would be `5.00`.
-          type: string
-          x-cds-type: AmountString
-        planRate:
-          description: If displayed to the consumer, the percentage value of any charges incorporated into the scheduled amounts due, excluding other fees. E.g., If the consumer agrees to repay a $1000 purchase plus 10% interest split across twelve instalments, this would be `0.1`.
-          type: string
-          x-cds-type: RateString
-        duration:
-          description: The expected repayment period as at the creation of the plan. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax). E.g., For a further three fortnightly repayments from the _creationDate_, this would be `P6W`.
-          type: string
-          x-cds-type: ExternalRef
-        instalmentInterval:
-          description: The expected repayment interval. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax). E.g., For fortnightly repayments, this would be `P2W`.
-          type: string
-          x-cds-type: ExternalRef
-        schedule:
-          description: Array of scheduled repayment amounts and dates.
-          items:
-            $ref: '#/components/schemas/BankingInstalmentPlanSchedule'
-          type: array
-      required:
-      - accountId
-      - amount
-      - creationDate
-      - duration
-      - instalmentInterval
-      - merchantName
-      - planId
-      - planNickname
-      - planReference
-      - schedule
-      type: object
-    BankingScheduledPaymentInterval:
-      example:
-        interval: interval
-        dayInInterval: P1D
-      properties:
+        paymentsRemaining:
+          description: Indicates the number of payments remaining in the schedule. If both _finalPaymentDate_ and _paymentsRemaining_ are present then payments will stop according to the most constraining value. If neither field is present the payments will continue indefinitely.
+          example: 1
+          type: integer
+          x-cds-type: PositiveInteger
         interval:
-          description: An interval for the payment. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax) with components less than a day in length ignored. This duration defines the period between payments starting with _nextPaymentDate_.
+          description: The interval for the payment. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax) with components less than a day in length ignored. This duration defines the period between payments starting with _nextPaymentDate_.
           type: string
           x-cds-type: ExternalRef
-        dayInInterval:
-          default: P1D
-          description: Uses an interval to define the ordinal day within the interval defined by the interval field on which the payment occurs. If the resulting duration is 0 days in length or larger than the number of days in the interval then the payment will occur on the last day of the interval. A duration of 1 day indicates the first day of the interval. If absent the assumed value is `P1D`. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax) with components less than a day in length ignored. The first day of a week is considered to be Monday.
+        lastWeekDay:
+          description: The weekDay specified. The payment will occur on the last occurrence of this weekday in the interval.
+          enum:
+          - FRI
+          - MON
+          - SAT
+          - SUN
+          - THU
+          - TUE
+          - WED
           type: string
-          x-cds-type: ExternalRef
+        nonBusinessDayTreatment:
+          default: 'ON'
+          description: Enumerated field giving the treatment where a scheduled payment date is not a business day. If absent assumed to be `ON`.<ul><li>`AFTER` - If a scheduled payment date is a non-business day the payment will be made on the first business day after the scheduled payment date.<li>`BEFORE` - If a scheduled payment date is a non-business day the payment will be made on the first business day before the scheduled payment date.<li>`ON` - If a scheduled payment date is a non-business day the payment will be made on that day regardless.<li>`ONLY` - Payments only occur on business days. If a scheduled payment date is a non-business day the payment will be ignored.</ul>
+          enum:
+          - AFTER
+          - BEFORE
+          - 'ON'
+          - ONLY
+          type: string
       required:
       - interval
+      - lastWeekDay
       type: object
-    ErrorV2:
-      properties:
-        code:
-          description: The code of the error encountered. Where the error is specific to the respondent, an application-specific error code, expressed as a string value. If the error is application-specific, the URN code that the specific error extends must be provided in the _meta_ object. Otherwise, the value is the error code URN.
-          type: string
-        title:
-          description: A short, human-readable summary of the problem that **MUST NOT** change from occurrence to occurrence of the problem represented by the error code.
-          type: string
-        detail:
-          description: A human-readable explanation specific to this occurrence of the problem.
-          type: string
-        meta:
-          $ref: '#/components/schemas/ErrorV2_meta'
-      required:
-      - code
-      - detail
-      - title
-      type: object
-      x-conditional:
-      - meta
-    ResponseBankingInstalmentPlanList_data:
-      example:
-        plans:
-        - amount: amount
-          planCharge: planCharge
-          planReference: planReference
-          instalmentInterval: instalmentInterval
-          creationDate: creationDate
-          merchantName: merchantName
-          planCurrency: AUD
-          duration: duration
-          accountId: ''
-          schedule:
-          - amountDue: amountDue
-            isPaid: false
-            dueDate: dueDate
-          - amountDue: amountDue
-            isPaid: false
-            dueDate: dueDate
-          planRate: planRate
-          merchantCategoryCode: merchantCategoryCode
-          planNickname: planNickname
-          planId: ''
-        - amount: amount
-          planCharge: planCharge
-          planReference: planReference
-          instalmentInterval: instalmentInterval
-          creationDate: creationDate
-          merchantName: merchantName
-          planCurrency: AUD
-          duration: duration
-          accountId: ''
-          schedule:
-          - amountDue: amountDue
-            isPaid: false
-            dueDate: dueDate
-          - amountDue: amountDue
-            isPaid: false
-            dueDate: dueDate
-          planRate: planRate
-          merchantCategoryCode: merchantCategoryCode
-          planNickname: planNickname
-          planId: ''
-      properties:
-        plans:
-          description: Array of instalment plans. An instalment plan describes the terms of repayment for a specified loan amount such as a Buy Now, Pay Later (BNPL) purchase or a specific card transaction.
-          items:
-            $ref: '#/components/schemas/BankingInstalmentPlan'
-          type: array
-      required:
-      - plans
-      type: object
-    ResponseBankingScheduledPaymentsListV2_data:
-      example:
-        scheduledPayments:
-        - recurrence:
-            nextPaymentDate: nextPaymentDate
-            eventBased:
-              description: description
-            onceOff:
-              paymentDate: paymentDate
-            recurrenceUType: eventBased
-            intervalSchedule:
-              intervals:
-              - interval: interval
-                dayInInterval: P1D
-              - interval: interval
-                dayInInterval: P1D
-              paymentsRemaining: 1
-              finalPaymentDate: finalPaymentDate
-              nonBusinessDayTreatment: 'ON'
-            lastWeekDay:
-              paymentsRemaining: 1
-              interval: interval
-              finalPaymentDate: finalPaymentDate
-              lastWeekDay: FRI
-              nonBusinessDayTreatment: 'ON'
-          scheduledPaymentId: ''
-          payeeReference: payeeReference
-          payerReference: payerReference
-          nickname: nickname
-          from:
-            accountId: ''
-          paymentSet:
-          - isAmountCalculated: false
-            amount: amount
-            currency: AUD
-            to:
-              domestic:
-                payeeAccountUType: account
-                payId:
-                  identifier: identifier
-                  name: name
-                  type: ABN
-                account:
-                  bsb: bsb
-                  accountName: accountName
-                  accountNumber: accountNumber
-                card:
-                  cardNumber: cardNumber
-              accountId: ''
-              biller:
-                billerName: billerName
-                crn: crn
-                billerCode: billerCode
-              digitalWallet:
-                identifier: identifier
-                provider: PAYPAL_AU
-                name: name
-                type: EMAIL
-              payeeReference: payeeReference
-              toUType: accountId
-              nickname: nickname
-              payeeId: ''
-              international:
-                bankDetails:
-                  country: country
-                  routingNumber: routingNumber
-                  fedWireNumber: fedWireNumber
-                  chipNumber: chipNumber
-                  legalEntityIdentifier: legalEntityIdentifier
-                  accountNumber: accountNumber
-                  bankAddress:
-                    address: address
-                    name: name
-                  sortCode: sortCode
-                  beneficiaryBankBIC: beneficiaryBankBIC
-                beneficiaryDetails:
-                  country: country
-                  name: name
-                  message: message
-          - isAmountCalculated: false
-            amount: amount
-            currency: AUD
-            to:
-              domestic:
-                payeeAccountUType: account
-                payId:
-                  identifier: identifier
-                  name: name
-                  type: ABN
-                account:
-                  bsb: bsb
-                  accountName: accountName
-                  accountNumber: accountNumber
-                card:
-                  cardNumber: cardNumber
-              accountId: ''
-              biller:
-                billerName: billerName
-                crn: crn
-                billerCode: billerCode
-              digitalWallet:
-                identifier: identifier
-                provider: PAYPAL_AU
-                name: name
-                type: EMAIL
-              payeeReference: payeeReference
-              toUType: accountId
-              nickname: nickname
-              payeeId: ''
-              international:
-                bankDetails:
-                  country: country
-                  routingNumber: routingNumber
-                  fedWireNumber: fedWireNumber
-                  chipNumber: chipNumber
-                  legalEntityIdentifier: legalEntityIdentifier
-                  accountNumber: accountNumber
-                  bankAddress:
-                    address: address
-                    name: name
-                  sortCode: sortCode
-                  beneficiaryBankBIC: beneficiaryBankBIC
-                beneficiaryDetails:
-                  country: country
-                  name: name
-                  message: message
-          status: ACTIVE
-        - recurrence:
-            nextPaymentDate: nextPaymentDate
-            eventBased:
-              description: description
-            onceOff:
-              paymentDate: paymentDate
-            recurrenceUType: eventBased
-            intervalSchedule:
-              intervals:
-              - interval: interval
-                dayInInterval: P1D
-              - interval: interval
-                dayInInterval: P1D
-              paymentsRemaining: 1
-              finalPaymentDate: finalPaymentDate
-              nonBusinessDayTreatment: 'ON'
-            lastWeekDay:
-              paymentsRemaining: 1
-              interval: interval
-              finalPaymentDate: finalPaymentDate
-              lastWeekDay: FRI
-              nonBusinessDayTreatment: 'ON'
-          scheduledPaymentId: ''
-          payeeReference: payeeReference
-          payerReference: payerReference
-          nickname: nickname
-          from:
-            accountId: ''
-          paymentSet:
-          - isAmountCalculated: false
-            amount: amount
-            currency: AUD
-            to:
-              domestic:
-                payeeAccountUType: account
-                payId:
-                  identifier: identifier
-                  name: name
-                  type: ABN
-                account:
-                  bsb: bsb
-                  accountName: accountName
-                  accountNumber: accountNumber
-                card:
-                  cardNumber: cardNumber
-              accountId: ''
-              biller:
-                billerName: billerName
-                crn: crn
-                billerCode: billerCode
-              digitalWallet:
-                identifier: identifier
-                provider: PAYPAL_AU
-                name: name
-                type: EMAIL
-              payeeReference: payeeReference
-              toUType: accountId
-              nickname: nickname
-              payeeId: ''
-              international:
-                bankDetails:
-                  country: country
-                  routingNumber: routingNumber
-                  fedWireNumber: fedWireNumber
-                  chipNumber: chipNumber
-                  legalEntityIdentifier: legalEntityIdentifier
-                  accountNumber: accountNumber
-                  bankAddress:
-                    address: address
-                    name: name
-                  sortCode: sortCode
-                  beneficiaryBankBIC: beneficiaryBankBIC
-                beneficiaryDetails:
-                  country: country
-                  name: name
-                  message: message
-          - isAmountCalculated: false
-            amount: amount
-            currency: AUD
-            to:
-              domestic:
-                payeeAccountUType: account
-                payId:
-                  identifier: identifier
-                  name: name
-                  type: ABN
-                account:
-                  bsb: bsb
-                  accountName: accountName
-                  accountNumber: accountNumber
-                card:
-                  cardNumber: cardNumber
-              accountId: ''
-              biller:
-                billerName: billerName
-                crn: crn
-                billerCode: billerCode
-              digitalWallet:
-                identifier: identifier
-                provider: PAYPAL_AU
-                name: name
-                type: EMAIL
-              payeeReference: payeeReference
-              toUType: accountId
-              nickname: nickname
-              payeeId: ''
-              international:
-                bankDetails:
-                  country: country
-                  routingNumber: routingNumber
-                  fedWireNumber: fedWireNumber
-                  chipNumber: chipNumber
-                  legalEntityIdentifier: legalEntityIdentifier
-                  accountNumber: accountNumber
-                  bankAddress:
-                    address: address
-                    name: name
-                  sortCode: sortCode
-                  beneficiaryBankBIC: beneficiaryBankBIC
-                beneficiaryDetails:
-                  country: country
-                  name: name
-                  message: message
-          status: ACTIVE
-      properties:
-        scheduledPayments:
-          description: The list of scheduled payments to return.
-          items:
-            $ref: '#/components/schemas/BankingScheduledPaymentV2'
-          type: array
-      required:
-      - scheduledPayments
-      type: object
+    BankingProductCategoryV2:
+      description: The category to which a product or account belongs. See [here](#product-categories) for more details.
+      enum:
+      - BUSINESS_LOANS
+      - BUY_NOW_PAY_LATER
+      - CRED_AND_CHRG_CARDS
+      - LEASES
+      - MARGIN_LOANS
+      - OVERDRAFTS
+      - PERS_LOANS
+      - REGULATED_TRUST_ACCOUNTS
+      - RESIDENTIAL_MORTGAGES
+      - TERM_DEPOSITS
+      - TRADE_FINANCE
+      - TRANS_AND_SAVINGS_ACCOUNTS
+      - TRAVEL_CARDS
+      type: string
     BankingScheduledPaymentV2:
       example:
         recurrence:
@@ -1505,41 +992,174 @@ components:
       type: object
       x-conditional:
       - payeeReference
-    MetaPaginated:
+    BankingBillerPayee:
       example:
-        totalRecords: 0
-        totalPages: 6
+        billerName: billerName
+        crn: crn
+        billerCode: billerCode
       properties:
-        totalRecords:
-          description: The total number of records in the full set. See [pagination](#pagination).
-          type: integer
-          x-cds-type: NaturalNumber
-        totalPages:
-          description: The total number of pages in the full set. See [pagination](#pagination).
-          type: integer
-          x-cds-type: NaturalNumber
+        billerCode:
+          description: BPAY Biller Code of the Biller.
+          type: string
+        crn:
+          description: BPAY CRN of the Biller (if available).<br/>Where the CRN contains sensitive information, it should be masked in line with how the Data Holder currently displays account identifiers in their existing online banking channels. If the contents of the CRN match the format of a Credit Card PAN they should be masked according to the rules applicable for [MaskedPANString](#common-field-types). If the contents are otherwise sensitive, then it should be masked using the rules applicable for the [MaskedAccountString](#common-field-types) common type.
+          type: string
+        billerName:
+          description: Name of the Biller.
+          type: string
       required:
-      - totalPages
-      - totalRecords
+      - billerCode
+      - billerName
       type: object
-    BankingDomesticPayeeAccount:
+      x-conditional:
+      - crn
+    BankingScheduledPaymentRecurrenceEventBased:
+      description: Indicates that the schedule of payments is defined according to an external event that cannot be predetermined. Mandatory if the _recurrenceUType_ value is `eventBased`.
       example:
-        bsb: bsb
-        accountName: accountName
-        accountNumber: accountNumber
+        description: description
       properties:
-        accountName:
-          description: Name of the account to pay to.
+        description:
+          description: Description of the event and conditions that will result in the payment. Expected to be formatted for display to a customer.
           type: string
-        bsb:
-          description: BSB of the account to pay to.
+      required:
+      - description
+      type: object
+    BankingPayeeId:
+      description: A unique identifier for a Banking payee, generated according to [CDR ID Permanence](#id-permanence) requirements.
+      type: string
+      x-cds-type: ASCIIString
+    BankingInternationalPayee_bankDetails:
+      example:
+        country: country
+        routingNumber: routingNumber
+        fedWireNumber: fedWireNumber
+        chipNumber: chipNumber
+        legalEntityIdentifier: legalEntityIdentifier
+        accountNumber: accountNumber
+        bankAddress:
+          address: address
+          name: name
+        sortCode: sortCode
+        beneficiaryBankBIC: beneficiaryBankBIC
+      properties:
+        country:
+          description: Country of the recipient institution. A valid [ISO 3166 Alpha-3](https://www.iso.org/iso-3166-country-codes.html) country code.
           type: string
+          x-cds-type: ExternalRef
         accountNumber:
-          description: Number of the account to pay to.
+          description: Account Targeted for payment.
           type: string
+        bankAddress:
+          $ref: '#/components/schemas/BankingInternationalPayee_bankDetails_bankAddress'
+        beneficiaryBankBIC:
+          description: Swift bank code. Aligns with standard [ISO 9362](https://www.iso.org/standard/60390.html).
+          type: string
+          x-cds-type: ExternalRef
+        fedWireNumber:
+          description: Number for Fedwire payment (Federal Reserve Wire Network).
+          type: string
+        sortCode:
+          description: Sort code used for account identification in some jurisdictions.
+          type: string
+        chipNumber:
+          description: Number for the Clearing House Interbank Payments System.
+          type: string
+        routingNumber:
+          description: International bank routing number.
+          type: string
+        legalEntityIdentifier:
+          description: The legal entity identifier (LEI) for the beneficiary. Aligns with [ISO 17442](https://www.iso.org/standard/59771.html).
+          type: string
+          x-cds-type: ExternalRef
       required:
       - accountNumber
-      - bsb
+      - country
+      type: object
+    BankingInternationalPayee_bankDetails_bankAddress:
+      example:
+        address: address
+        name: name
+      properties:
+        name:
+          description: Name of the recipient Bank.
+          type: string
+        address:
+          description: Address of the recipient Bank.
+          type: string
+      required:
+      - address
+      - name
+      type: object
+    ResponseBankingInstalmentPlanList_data:
+      example:
+        plans:
+        - amount: amount
+          planCharge: planCharge
+          planReference: planReference
+          instalmentInterval: instalmentInterval
+          creationDate: creationDate
+          merchantName: merchantName
+          planCurrency: AUD
+          duration: duration
+          accountId: ''
+          schedule:
+          - amountDue: amountDue
+            isPaid: false
+            dueDate: dueDate
+          - amountDue: amountDue
+            isPaid: false
+            dueDate: dueDate
+          planRate: planRate
+          merchantCategoryCode: merchantCategoryCode
+          planNickname: planNickname
+          planId: ''
+        - amount: amount
+          planCharge: planCharge
+          planReference: planReference
+          instalmentInterval: instalmentInterval
+          creationDate: creationDate
+          merchantName: merchantName
+          planCurrency: AUD
+          duration: duration
+          accountId: ''
+          schedule:
+          - amountDue: amountDue
+            isPaid: false
+            dueDate: dueDate
+          - amountDue: amountDue
+            isPaid: false
+            dueDate: dueDate
+          planRate: planRate
+          merchantCategoryCode: merchantCategoryCode
+          planNickname: planNickname
+          planId: ''
+      properties:
+        plans:
+          description: Array of instalment plans. An instalment plan describes the terms of repayment for a specified loan amount such as a Buy Now, Pay Later (BNPL) purchase or a specific card transaction.
+          items:
+            $ref: '#/components/schemas/BankingInstalmentPlan'
+          type: array
+      required:
+      - plans
+      type: object
+    BankingInternationalPayee_beneficiaryDetails:
+      example:
+        country: country
+        name: name
+        message: message
+      properties:
+        name:
+          description: Name of the beneficiary.
+          type: string
+        country:
+          description: Country where the beneficiary resides. A valid [ISO 3166 Alpha-3](https://www.iso.org/iso-3166-country-codes.html) country code.
+          type: string
+          x-cds-type: ExternalRef
+        message:
+          description: Response message for the payment.
+          type: string
+      required:
+      - country
       type: object
     BankingScheduledPaymentToV2:
       description: Object containing details of the destination of the payment. Used to specify a variety of payment destination types.
@@ -1632,20 +1252,172 @@ components:
       - international
       - nickname
       - payeeReference
-    RequestAccountIdListV1:
+    BankingScheduledPaymentInterval:
       example:
-        data:
-          accountIds:
-          - null
-          - null
-        meta: '{}'
+        interval: interval
+        dayInInterval: P1D
       properties:
-        data:
-          $ref: '#/components/schemas/RequestAccountIdListV1_data'
-        meta:
-          type: object
+        interval:
+          description: An interval for the payment. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax) with components less than a day in length ignored. This duration defines the period between payments starting with _nextPaymentDate_.
+          type: string
+          x-cds-type: ExternalRef
+        dayInInterval:
+          default: P1D
+          description: Uses an interval to define the ordinal day within the interval defined by the interval field on which the payment occurs. If the resulting duration is 0 days in length or larger than the number of days in the interval then the payment will occur on the last day of the interval. A duration of 1 day indicates the first day of the interval. If absent the assumed value is `P1D`. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax) with components less than a day in length ignored. The first day of a week is considered to be Monday.
+          type: string
+          x-cds-type: ExternalRef
       required:
-      - data
+      - interval
+      type: object
+    BankingInstalmentPlanSchedule:
+      example:
+        amountDue: amountDue
+        isPaid: false
+        dueDate: dueDate
+      properties:
+        amountDue:
+          description: Amount due with this repayment.
+          type: string
+          x-cds-type: AmountString
+        dueDate:
+          description: Date this repayment is or was due.
+          type: string
+          x-cds-type: DateString
+        isPaid:
+          default: false
+          description: Whether the associated _amountDue_ has been paid or is otherwise considered as not outstanding. `false` is assumed if absent.
+          type: boolean
+      required:
+      - amountDue
+      - dueDate
+      type: object
+    ErrorV2:
+      properties:
+        code:
+          description: The code of the error encountered. Where the error is specific to the respondent, an application-specific error code, expressed as a string value. If the error is application-specific, the URN code that the specific error extends must be provided in the _meta_ object. Otherwise, the value is the error code URN.
+          type: string
+        title:
+          description: A short, human-readable summary of the problem that **MUST NOT** change from occurrence to occurrence of the problem represented by the error code.
+          type: string
+        detail:
+          description: A human-readable explanation specific to this occurrence of the problem.
+          type: string
+        meta:
+          $ref: '#/components/schemas/ErrorV2_meta'
+      required:
+      - code
+      - detail
+      - title
+      type: object
+      x-conditional:
+      - meta
+    RequestAccountIdListV1_data:
+      example:
+        accountIds:
+        - null
+        - null
+      properties:
+        accountIds:
+          description: Array of _accountId_ values to obtain data for.
+          items:
+            $ref: '#/components/schemas/BankingAccountId'
+          type: array
+      required:
+      - accountIds
+      type: object
+    BankingDigitalWalletPayee:
+      example:
+        identifier: identifier
+        provider: PAYPAL_AU
+        name: name
+        type: EMAIL
+      properties:
+        name:
+          description: The display name of the wallet as given by the customer, else a default value defined by the data holder.
+          type: string
+        identifier:
+          description: The identifier of the digital wallet (dependent on type).
+          type: string
+        type:
+          description: The type of the digital wallet identifier.
+          enum:
+          - EMAIL
+          - CONTACT_NAME
+          - TELEPHONE
+          type: string
+        provider:
+          description: The provider of the digital wallet.
+          enum:
+          - PAYPAL_AU
+          - OTHER
+          type: string
+      required:
+      - identifier
+      - name
+      - provider
+      - type
+      type: object
+    ResponseErrorListV2:
+      properties:
+        errors:
+          description: List of errors.
+          items:
+            $ref: '#/components/schemas/ErrorV2'
+          type: array
+      required:
+      - errors
+      type: object
+    ErrorV2_meta:
+      description: Additional data for customised error codes.
+      properties:
+        urn:
+          description: The CDR error code URN which the application-specific error code extends. Mandatory if the error _code_ is an application-specific error rather than a standardised error code.
+          type: string
+      type: object
+      x-conditional:
+      - urn
+    BankingDomesticPayeeAccount:
+      example:
+        bsb: bsb
+        accountName: accountName
+        accountNumber: accountNumber
+      properties:
+        accountName:
+          description: Name of the account to pay to.
+          type: string
+        bsb:
+          description: BSB of the account to pay to.
+          type: string
+        accountNumber:
+          description: Number of the account to pay to.
+          type: string
+      required:
+      - accountNumber
+      - bsb
+      type: object
+    BankingScheduledPaymentFrom:
+      description: Object containing details of the source of the payment. Currently only specifies an _accountId_ but provided as an object to facilitate future extensibility and consistency with the _to_ object.
+      example:
+        accountId: ''
+      properties:
+        accountId:
+          allOf:
+          - $ref: '#/components/schemas/BankingAccountId'
+          description: Unique identifier for the account.
+      required:
+      - accountId
+      type: object
+    BankingScheduledPaymentRecurrenceOnceOff:
+      description: Indicates that the payment is a once off payment on a specific future date. Mandatory if the _recurrenceUType_ value is `onceOff`.
+      example:
+        paymentDate: paymentDate
+      properties:
+        paymentDate:
+          description: The scheduled date for the once off payment.
+          type: string
+          x-cds-type: DateString
+      required:
+      - paymentDate
       type: object
     BankingScheduledPaymentRecurrenceIntervalSchedule:
       description: Indicates that the schedule of payments is defined by a series of intervals. Mandatory if the _recurrenceUType_ value is `intervalSchedule`.
@@ -1685,80 +1457,158 @@ components:
       required:
       - intervals
       type: object
-    BankingInternationalPayee_bankDetails_bankAddress:
+    BankingInstalmentPlan:
       example:
-        address: address
-        name: name
+        amount: amount
+        planCharge: planCharge
+        planReference: planReference
+        instalmentInterval: instalmentInterval
+        creationDate: creationDate
+        merchantName: merchantName
+        planCurrency: AUD
+        duration: duration
+        accountId: ''
+        schedule:
+        - amountDue: amountDue
+          isPaid: false
+          dueDate: dueDate
+        - amountDue: amountDue
+          isPaid: false
+          dueDate: dueDate
+        planRate: planRate
+        merchantCategoryCode: merchantCategoryCode
+        planNickname: planNickname
+        planId: ''
       properties:
-        name:
-          description: Name of the recipient Bank.
+        accountId:
+          allOf:
+          - $ref: '#/components/schemas/BankingAccountId'
+          description: Unique identifier for the account.
+        planId:
+          allOf:
+          - $ref: '#/components/schemas/BankingInstalmentPlanId'
+          description: Unique identifier for this plan in accordance with ID Permanence requirements.
+        planReference:
+          description: Unique purchase or order number for this plan, aligned to other channels.
           type: string
-        address:
-          description: Address of the recipient Bank.
+        merchantName:
+          description: Name of the merchant associated with the instalment plan.
           type: string
-      required:
-      - address
-      - name
-      type: object
-    BankingScheduledPaymentRecurrenceLastWeekday:
-      description: Indicates that the schedule of payments is defined according to the last occurrence of a specific weekday in an interval. Mandatory if the _recurrenceUType_ value is `lastWeekDay`.
-      example:
-        paymentsRemaining: 1
-        interval: interval
-        finalPaymentDate: finalPaymentDate
-        lastWeekDay: FRI
-        nonBusinessDayTreatment: 'ON'
-      properties:
-        finalPaymentDate:
-          description: The limit date after which no more payments should be made using this schedule. If both _finalPaymentDate_ and _paymentsRemaining_ are present then payments will stop according to the most constraining value. If neither field is present the payments will continue indefinitely.
+        merchantCategoryCode:
+          description: The merchant category code (MCC) for the merchant associated with the instalment plan.
+          type: string
+        planNickname:
+          description: The short display name of the plan as provided by the customer. Where a customer has not provided a nickname, a display name derived by the data holder consistent with other channels.
+          type: string
+        creationDate:
+          description: The date the plan was created.
           type: string
           x-cds-type: DateString
-        paymentsRemaining:
-          description: Indicates the number of payments remaining in the schedule. If both _finalPaymentDate_ and _paymentsRemaining_ are present then payments will stop according to the most constraining value. If neither field is present the payments will continue indefinitely.
-          example: 1
-          type: integer
-          x-cds-type: PositiveInteger
-        interval:
-          description: The interval for the payment. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax) with components less than a day in length ignored. This duration defines the period between payments starting with _nextPaymentDate_.
+        amount:
+          description: The original transaction amount the instalment plan was created for, including any upfront payment. E.g., For a $100 purchase split into four repayments, this would be `100.00`.
+          type: string
+          x-cds-type: AmountString
+        planCurrency:
+          default: AUD
+          description: The currency of the plan amount. If absent assumed to be `AUD`.
+          type: string
+          x-cds-type: CurrencyString
+        planCharge:
+          description: Any charges incorporated into the scheduled amounts due, excluding other fees. E.g., If the consumer agrees to repay a $100 purchase plus a $5 charge split across four instalments, this would be `5.00`.
+          type: string
+          x-cds-type: AmountString
+        planRate:
+          description: If displayed to the consumer, the percentage value of any charges incorporated into the scheduled amounts due, excluding other fees. E.g., If the consumer agrees to repay a $1000 purchase plus 10% interest split across twelve instalments, this would be `0.1`.
+          type: string
+          x-cds-type: RateString
+        duration:
+          description: The expected repayment period as at the creation of the plan. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax). E.g., For a further three fortnightly repayments from the _creationDate_, this would be `P6W`.
           type: string
           x-cds-type: ExternalRef
-        lastWeekDay:
-          description: The weekDay specified. The payment will occur on the last occurrence of this weekday in the interval.
-          enum:
-          - FRI
-          - MON
-          - SAT
-          - SUN
-          - THU
-          - TUE
-          - WED
+        instalmentInterval:
+          description: The expected repayment interval. Formatted according to [ISO 8601 Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations) (excludes recurrence syntax). E.g., For fortnightly repayments, this would be `P2W`.
           type: string
-        nonBusinessDayTreatment:
-          default: 'ON'
-          description: Enumerated field giving the treatment where a scheduled payment date is not a business day. If absent assumed to be `ON`.<ul><li>`AFTER` - If a scheduled payment date is a non-business day the payment will be made on the first business day after the scheduled payment date.<li>`BEFORE` - If a scheduled payment date is a non-business day the payment will be made on the first business day before the scheduled payment date.<li>`ON` - If a scheduled payment date is a non-business day the payment will be made on that day regardless.<li>`ONLY` - Payments only occur on business days. If a scheduled payment date is a non-business day the payment will be ignored.</ul>
-          enum:
-          - AFTER
-          - BEFORE
-          - 'ON'
-          - ONLY
-          type: string
-      required:
-      - interval
-      - lastWeekDay
-      type: object
-    RequestAccountIdListV1_data:
-      example:
-        accountIds:
-        - null
-        - null
-      properties:
-        accountIds:
-          description: Array of _accountId_ values to obtain data for.
+          x-cds-type: ExternalRef
+        schedule:
+          description: Array of scheduled repayment amounts and dates.
           items:
-            $ref: '#/components/schemas/BankingAccountId'
+            $ref: '#/components/schemas/BankingInstalmentPlanSchedule'
           type: array
       required:
-      - accountIds
+      - accountId
+      - amount
+      - creationDate
+      - duration
+      - instalmentInterval
+      - merchantName
+      - planId
+      - planNickname
+      - planReference
+      - schedule
+      type: object
+    MetaPaginated:
+      example:
+        totalRecords: 0
+        totalPages: 6
+      properties:
+        totalRecords:
+          description: The total number of records in the full set. See [pagination](#pagination).
+          type: integer
+          x-cds-type: NaturalNumber
+        totalPages:
+          description: The total number of pages in the full set. See [pagination](#pagination).
+          type: integer
+          x-cds-type: NaturalNumber
+      required:
+      - totalPages
+      - totalRecords
+      type: object
+    BankingInstalmentPlanId:
+      description: A unique identifier for a Banking instalment plan, generated according to [CDR ID Permanence](#id-permanence) requirements.
+      type: string
+      x-cds-type: ASCIIString
+    RequestAccountIdListV1:
+      example:
+        data:
+          accountIds:
+          - null
+          - null
+        meta: '{}'
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestAccountIdListV1_data'
+        meta:
+          type: object
+      required:
+      - data
+      type: object
+    BankingScheduledPaymentId:
+      description: A unique identifier for a Banking scheduled payment, generated according to [CDR ID Permanence](#id-permanence) requirements.
+      type: string
+      x-cds-type: ASCIIString
+    BankingDomesticPayeePayId:
+      example:
+        identifier: identifier
+        name: name
+        type: ABN
+      properties:
+        name:
+          description: The name assigned to the PayID by the owner of the PayID.
+          type: string
+        identifier:
+          description: The identifier of the PayID (dependent on type).
+          type: string
+        type:
+          description: The type of the PayID.
+          enum:
+          - ABN
+          - EMAIL
+          - ORG_IDENTIFIER
+          - TELEPHONE
+          type: string
+      required:
+      - identifier
+      - type
       type: object
     BankingScheduledPaymentRecurrence:
       description: Object containing the detail of the schedule for the payment.
@@ -1813,258 +1663,108 @@ components:
       - intervalSchedule
       - lastWeekDay
       - eventBased
-    BankingInstalmentPlanId:
-      description: A unique identifier for a Banking instalment plan, generated according to [CDR ID Permanence](#id-permanence) requirements.
-      type: string
-      x-cds-type: ASCIIString
-    BankingAccountId:
-      description: A unique identifier for a Banking account, generated according to [CDR ID Permanence](#id-permanence) requirements.
-      type: string
-      x-cds-type: ASCIIString
-    BankingProductCategoryV2:
-      description: The category to which a product or account belongs. See [here](#product-categories) for more details.
-      enum:
-      - BUSINESS_LOANS
-      - BUY_NOW_PAY_LATER
-      - CRED_AND_CHRG_CARDS
-      - LEASES
-      - MARGIN_LOANS
-      - OVERDRAFTS
-      - PERS_LOANS
-      - REGULATED_TRUST_ACCOUNTS
-      - RESIDENTIAL_MORTGAGES
-      - TERM_DEPOSITS
-      - TRADE_FINANCE
-      - TRANS_AND_SAVINGS_ACCOUNTS
-      - TRAVEL_CARDS
-      type: string
-    BankingScheduledPaymentFrom:
-      description: Object containing details of the source of the payment. Currently only specifies an _accountId_ but provided as an object to facilitate future extensibility and consistency with the _to_ object.
+    BankingInternationalPayee:
       example:
-        accountId: ''
-      properties:
-        accountId:
-          allOf:
-          - $ref: '#/components/schemas/BankingAccountId'
-          description: Unique identifier for the account.
-      required:
-      - accountId
-      type: object
-    BankingInternationalPayee_bankDetails:
-      example:
-        country: country
-        routingNumber: routingNumber
-        fedWireNumber: fedWireNumber
-        chipNumber: chipNumber
-        legalEntityIdentifier: legalEntityIdentifier
-        accountNumber: accountNumber
-        bankAddress:
-          address: address
-          name: name
-        sortCode: sortCode
-        beneficiaryBankBIC: beneficiaryBankBIC
-      properties:
-        country:
-          description: Country of the recipient institution. A valid [ISO 3166 Alpha-3](https://www.iso.org/iso-3166-country-codes.html) country code.
-          type: string
-          x-cds-type: ExternalRef
-        accountNumber:
-          description: Account Targeted for payment.
-          type: string
-        bankAddress:
-          $ref: '#/components/schemas/BankingInternationalPayee_bankDetails_bankAddress'
-        beneficiaryBankBIC:
-          description: Swift bank code. Aligns with standard [ISO 9362](https://www.iso.org/standard/60390.html).
-          type: string
-          x-cds-type: ExternalRef
-        fedWireNumber:
-          description: Number for Fedwire payment (Federal Reserve Wire Network).
-          type: string
-        sortCode:
-          description: Sort code used for account identification in some jurisdictions.
-          type: string
-        chipNumber:
-          description: Number for the Clearing House Interbank Payments System.
-          type: string
-        routingNumber:
-          description: International bank routing number.
-          type: string
-        legalEntityIdentifier:
-          description: The legal entity identifier (LEI) for the beneficiary. Aligns with [ISO 17442](https://www.iso.org/standard/59771.html).
-          type: string
-          x-cds-type: ExternalRef
-      required:
-      - accountNumber
-      - country
-      type: object
-    BankingDomesticPayee:
-      example:
-        payeeAccountUType: account
-        payId:
-          identifier: identifier
-          name: name
-          type: ABN
-        account:
-          bsb: bsb
-          accountName: accountName
+        bankDetails:
+          country: country
+          routingNumber: routingNumber
+          fedWireNumber: fedWireNumber
+          chipNumber: chipNumber
+          legalEntityIdentifier: legalEntityIdentifier
           accountNumber: accountNumber
-        card:
-          cardNumber: cardNumber
-      properties:
-        payeeAccountUType:
-          description: 'Type of account object included. Valid values are: <ul><li>`account` A standard Australian account defined by BSB/Account Number.<li>`card` A credit or charge card to pay to (note that PANs are masked).<li>`payId` A PayID recognised by NPP.</ul>'
-          enum:
-          - account
-          - card
-          - payId
-          type: string
-        account:
-          $ref: '#/components/schemas/BankingDomesticPayeeAccount'
-        card:
-          $ref: '#/components/schemas/BankingDomesticPayeeCard'
-        payId:
-          $ref: '#/components/schemas/BankingDomesticPayeePayId'
-      required:
-      - payeeAccountUType
-      type: object
-      x-conditional:
-      - account
-      - card
-      - payId
-    ErrorV2_meta:
-      description: Additional data for customised error codes.
-      properties:
-        urn:
-          description: The CDR error code URN which the application-specific error code extends. Mandatory if the error _code_ is an application-specific error rather than a standardised error code.
-          type: string
-      type: object
-      x-conditional:
-      - urn
-    BankingBillerPayee:
-      example:
-        billerName: billerName
-        crn: crn
-        billerCode: billerCode
-      properties:
-        billerCode:
-          description: BPAY Biller Code of the Biller.
-          type: string
-        crn:
-          description: BPAY CRN of the Biller (if available).<br/>Where the CRN contains sensitive information, it should be masked in line with how the Data Holder currently displays account identifiers in their existing online banking channels. If the contents of the CRN match the format of a Credit Card PAN they should be masked according to the rules applicable for [MaskedPANString](#common-field-types). If the contents are otherwise sensitive, then it should be masked using the rules applicable for the [MaskedAccountString](#common-field-types) common type.
-          type: string
-        billerName:
-          description: Name of the Biller.
-          type: string
-      required:
-      - billerCode
-      - billerName
-      type: object
-      x-conditional:
-      - crn
-    BankingScheduledPaymentSetV2:
-      description: The set of payment amounts and destination accounts for this payment accommodating multi-part payments. A single entry indicates a simple payment with one destination account. Must have at least one entry.
-      example:
-        isAmountCalculated: false
-        amount: amount
-        currency: AUD
-        to:
-          domestic:
-            payeeAccountUType: account
-            payId:
-              identifier: identifier
-              name: name
-              type: ABN
-            account:
-              bsb: bsb
-              accountName: accountName
-              accountNumber: accountNumber
-            card:
-              cardNumber: cardNumber
-          accountId: ''
-          biller:
-            billerName: billerName
-            crn: crn
-            billerCode: billerCode
-          digitalWallet:
-            identifier: identifier
-            provider: PAYPAL_AU
+          bankAddress:
+            address: address
             name: name
-            type: EMAIL
-          payeeReference: payeeReference
-          toUType: accountId
-          nickname: nickname
-          payeeId: ''
-          international:
-            bankDetails:
-              country: country
-              routingNumber: routingNumber
-              fedWireNumber: fedWireNumber
-              chipNumber: chipNumber
-              legalEntityIdentifier: legalEntityIdentifier
-              accountNumber: accountNumber
-              bankAddress:
-                address: address
-                name: name
-              sortCode: sortCode
-              beneficiaryBankBIC: beneficiaryBankBIC
-            beneficiaryDetails:
-              country: country
-              name: name
-              message: message
+          sortCode: sortCode
+          beneficiaryBankBIC: beneficiaryBankBIC
+        beneficiaryDetails:
+          country: country
+          name: name
+          message: message
       properties:
-        to:
-          $ref: '#/components/schemas/BankingScheduledPaymentToV2'
-        isAmountCalculated:
-          default: false
-          description: Flag indicating whether the amount of the payment is calculated based on the context of the event. For instance a payment to reduce the balance of a credit card to zero. If absent then `false` is assumed.
-          type: boolean
-        amount:
-          description: The amount of the next payment if known. Mandatory unless the _isAmountCalculated_ field is set to `true`. Must be zero or positive if present.
-          type: string
-          x-cds-type: AmountString
-        currency:
-          default: AUD
-          description: The currency for the payment. `AUD` assumed if not present.
-          type: string
-          x-cds-type: CurrencyString
+        beneficiaryDetails:
+          $ref: '#/components/schemas/BankingInternationalPayee_beneficiaryDetails'
+        bankDetails:
+          $ref: '#/components/schemas/BankingInternationalPayee_bankDetails'
       required:
-      - to
+      - bankDetails
+      - beneficiaryDetails
       type: object
-      x-conditional:
-      - amount
-    BankingDomesticPayeePayId:
+    BankingDomesticPayeeCard:
       example:
-        identifier: identifier
-        name: name
-        type: ABN
+        cardNumber: cardNumber
       properties:
-        name:
-          description: The name assigned to the PayID by the owner of the PayID.
+        cardNumber:
+          description: Name of the account to pay to.
           type: string
-        identifier:
-          description: The identifier of the PayID (dependent on type).
-          type: string
-        type:
-          description: The type of the PayID.
-          enum:
-          - ABN
-          - EMAIL
-          - ORG_IDENTIFIER
-          - TELEPHONE
-          type: string
+          x-cds-type: MaskedPANString
       required:
-      - identifier
-      - type
+      - cardNumber
       type: object
-    ResponseErrorListV2:
+    ResponseBankingInstalmentPlanList:
+      example:
+        data:
+          plans:
+          - amount: amount
+            planCharge: planCharge
+            planReference: planReference
+            instalmentInterval: instalmentInterval
+            creationDate: creationDate
+            merchantName: merchantName
+            planCurrency: AUD
+            duration: duration
+            accountId: ''
+            schedule:
+            - amountDue: amountDue
+              isPaid: false
+              dueDate: dueDate
+            - amountDue: amountDue
+              isPaid: false
+              dueDate: dueDate
+            planRate: planRate
+            merchantCategoryCode: merchantCategoryCode
+            planNickname: planNickname
+            planId: ''
+          - amount: amount
+            planCharge: planCharge
+            planReference: planReference
+            instalmentInterval: instalmentInterval
+            creationDate: creationDate
+            merchantName: merchantName
+            planCurrency: AUD
+            duration: duration
+            accountId: ''
+            schedule:
+            - amountDue: amountDue
+              isPaid: false
+              dueDate: dueDate
+            - amountDue: amountDue
+              isPaid: false
+              dueDate: dueDate
+            planRate: planRate
+            merchantCategoryCode: merchantCategoryCode
+            planNickname: planNickname
+            planId: ''
+        meta:
+          totalRecords: 0
+          totalPages: 6
+        links:
+          next: next
+          last: last
+          prev: prev
+          self: self
+          first: first
       properties:
-        errors:
-          description: List of errors.
-          items:
-            $ref: '#/components/schemas/ErrorV2'
-          type: array
+        data:
+          $ref: '#/components/schemas/ResponseBankingInstalmentPlanList_data'
+        links:
+          $ref: '#/components/schemas/LinksPaginated'
+        meta:
+          $ref: '#/components/schemas/MetaPaginated'
       required:
-      - errors
+      - data
+      - links
+      - meta
       type: object
     ResponseBankingScheduledPaymentsListV2:
       example:
@@ -2339,79 +2039,371 @@ components:
       - links
       - meta
       type: object
-    BankingInternationalPayee:
+    ResponseBankingScheduledPaymentsListV2_data:
       example:
-        bankDetails:
-          country: country
-          routingNumber: routingNumber
-          fedWireNumber: fedWireNumber
-          chipNumber: chipNumber
-          legalEntityIdentifier: legalEntityIdentifier
-          accountNumber: accountNumber
-          bankAddress:
-            address: address
-            name: name
-          sortCode: sortCode
-          beneficiaryBankBIC: beneficiaryBankBIC
-        beneficiaryDetails:
-          country: country
+        scheduledPayments:
+        - recurrence:
+            nextPaymentDate: nextPaymentDate
+            eventBased:
+              description: description
+            onceOff:
+              paymentDate: paymentDate
+            recurrenceUType: eventBased
+            intervalSchedule:
+              intervals:
+              - interval: interval
+                dayInInterval: P1D
+              - interval: interval
+                dayInInterval: P1D
+              paymentsRemaining: 1
+              finalPaymentDate: finalPaymentDate
+              nonBusinessDayTreatment: 'ON'
+            lastWeekDay:
+              paymentsRemaining: 1
+              interval: interval
+              finalPaymentDate: finalPaymentDate
+              lastWeekDay: FRI
+              nonBusinessDayTreatment: 'ON'
+          scheduledPaymentId: ''
+          payeeReference: payeeReference
+          payerReference: payerReference
+          nickname: nickname
+          from:
+            accountId: ''
+          paymentSet:
+          - isAmountCalculated: false
+            amount: amount
+            currency: AUD
+            to:
+              domestic:
+                payeeAccountUType: account
+                payId:
+                  identifier: identifier
+                  name: name
+                  type: ABN
+                account:
+                  bsb: bsb
+                  accountName: accountName
+                  accountNumber: accountNumber
+                card:
+                  cardNumber: cardNumber
+              accountId: ''
+              biller:
+                billerName: billerName
+                crn: crn
+                billerCode: billerCode
+              digitalWallet:
+                identifier: identifier
+                provider: PAYPAL_AU
+                name: name
+                type: EMAIL
+              payeeReference: payeeReference
+              toUType: accountId
+              nickname: nickname
+              payeeId: ''
+              international:
+                bankDetails:
+                  country: country
+                  routingNumber: routingNumber
+                  fedWireNumber: fedWireNumber
+                  chipNumber: chipNumber
+                  legalEntityIdentifier: legalEntityIdentifier
+                  accountNumber: accountNumber
+                  bankAddress:
+                    address: address
+                    name: name
+                  sortCode: sortCode
+                  beneficiaryBankBIC: beneficiaryBankBIC
+                beneficiaryDetails:
+                  country: country
+                  name: name
+                  message: message
+          - isAmountCalculated: false
+            amount: amount
+            currency: AUD
+            to:
+              domestic:
+                payeeAccountUType: account
+                payId:
+                  identifier: identifier
+                  name: name
+                  type: ABN
+                account:
+                  bsb: bsb
+                  accountName: accountName
+                  accountNumber: accountNumber
+                card:
+                  cardNumber: cardNumber
+              accountId: ''
+              biller:
+                billerName: billerName
+                crn: crn
+                billerCode: billerCode
+              digitalWallet:
+                identifier: identifier
+                provider: PAYPAL_AU
+                name: name
+                type: EMAIL
+              payeeReference: payeeReference
+              toUType: accountId
+              nickname: nickname
+              payeeId: ''
+              international:
+                bankDetails:
+                  country: country
+                  routingNumber: routingNumber
+                  fedWireNumber: fedWireNumber
+                  chipNumber: chipNumber
+                  legalEntityIdentifier: legalEntityIdentifier
+                  accountNumber: accountNumber
+                  bankAddress:
+                    address: address
+                    name: name
+                  sortCode: sortCode
+                  beneficiaryBankBIC: beneficiaryBankBIC
+                beneficiaryDetails:
+                  country: country
+                  name: name
+                  message: message
+          status: ACTIVE
+        - recurrence:
+            nextPaymentDate: nextPaymentDate
+            eventBased:
+              description: description
+            onceOff:
+              paymentDate: paymentDate
+            recurrenceUType: eventBased
+            intervalSchedule:
+              intervals:
+              - interval: interval
+                dayInInterval: P1D
+              - interval: interval
+                dayInInterval: P1D
+              paymentsRemaining: 1
+              finalPaymentDate: finalPaymentDate
+              nonBusinessDayTreatment: 'ON'
+            lastWeekDay:
+              paymentsRemaining: 1
+              interval: interval
+              finalPaymentDate: finalPaymentDate
+              lastWeekDay: FRI
+              nonBusinessDayTreatment: 'ON'
+          scheduledPaymentId: ''
+          payeeReference: payeeReference
+          payerReference: payerReference
+          nickname: nickname
+          from:
+            accountId: ''
+          paymentSet:
+          - isAmountCalculated: false
+            amount: amount
+            currency: AUD
+            to:
+              domestic:
+                payeeAccountUType: account
+                payId:
+                  identifier: identifier
+                  name: name
+                  type: ABN
+                account:
+                  bsb: bsb
+                  accountName: accountName
+                  accountNumber: accountNumber
+                card:
+                  cardNumber: cardNumber
+              accountId: ''
+              biller:
+                billerName: billerName
+                crn: crn
+                billerCode: billerCode
+              digitalWallet:
+                identifier: identifier
+                provider: PAYPAL_AU
+                name: name
+                type: EMAIL
+              payeeReference: payeeReference
+              toUType: accountId
+              nickname: nickname
+              payeeId: ''
+              international:
+                bankDetails:
+                  country: country
+                  routingNumber: routingNumber
+                  fedWireNumber: fedWireNumber
+                  chipNumber: chipNumber
+                  legalEntityIdentifier: legalEntityIdentifier
+                  accountNumber: accountNumber
+                  bankAddress:
+                    address: address
+                    name: name
+                  sortCode: sortCode
+                  beneficiaryBankBIC: beneficiaryBankBIC
+                beneficiaryDetails:
+                  country: country
+                  name: name
+                  message: message
+          - isAmountCalculated: false
+            amount: amount
+            currency: AUD
+            to:
+              domestic:
+                payeeAccountUType: account
+                payId:
+                  identifier: identifier
+                  name: name
+                  type: ABN
+                account:
+                  bsb: bsb
+                  accountName: accountName
+                  accountNumber: accountNumber
+                card:
+                  cardNumber: cardNumber
+              accountId: ''
+              biller:
+                billerName: billerName
+                crn: crn
+                billerCode: billerCode
+              digitalWallet:
+                identifier: identifier
+                provider: PAYPAL_AU
+                name: name
+                type: EMAIL
+              payeeReference: payeeReference
+              toUType: accountId
+              nickname: nickname
+              payeeId: ''
+              international:
+                bankDetails:
+                  country: country
+                  routingNumber: routingNumber
+                  fedWireNumber: fedWireNumber
+                  chipNumber: chipNumber
+                  legalEntityIdentifier: legalEntityIdentifier
+                  accountNumber: accountNumber
+                  bankAddress:
+                    address: address
+                    name: name
+                  sortCode: sortCode
+                  beneficiaryBankBIC: beneficiaryBankBIC
+                beneficiaryDetails:
+                  country: country
+                  name: name
+                  message: message
+          status: ACTIVE
+      properties:
+        scheduledPayments:
+          description: The list of scheduled payments to return.
+          items:
+            $ref: '#/components/schemas/BankingScheduledPaymentV2'
+          type: array
+      required:
+      - scheduledPayments
+      type: object
+    BankingDomesticPayee:
+      example:
+        payeeAccountUType: account
+        payId:
+          identifier: identifier
           name: name
-          message: message
+          type: ABN
+        account:
+          bsb: bsb
+          accountName: accountName
+          accountNumber: accountNumber
+        card:
+          cardNumber: cardNumber
       properties:
-        beneficiaryDetails:
-          $ref: '#/components/schemas/BankingInternationalPayee_beneficiaryDetails'
-        bankDetails:
-          $ref: '#/components/schemas/BankingInternationalPayee_bankDetails'
-      required:
-      - bankDetails
-      - beneficiaryDetails
-      type: object
-    BankingScheduledPaymentRecurrenceEventBased:
-      description: Indicates that the schedule of payments is defined according to an external event that cannot be predetermined. Mandatory if the _recurrenceUType_ value is `eventBased`.
-      example:
-        description: description
-      properties:
-        description:
-          description: Description of the event and conditions that will result in the payment. Expected to be formatted for display to a customer.
+        payeeAccountUType:
+          description: 'Type of account object included. Valid values are: <ul><li>`account` A standard Australian account defined by BSB/Account Number.<li>`card` A credit or charge card to pay to (note that PANs are masked).<li>`payId` A PayID recognised by NPP.</ul>'
+          enum:
+          - account
+          - card
+          - payId
           type: string
+        account:
+          $ref: '#/components/schemas/BankingDomesticPayeeAccount'
+        card:
+          $ref: '#/components/schemas/BankingDomesticPayeeCard'
+        payId:
+          $ref: '#/components/schemas/BankingDomesticPayeePayId'
       required:
-      - description
+      - payeeAccountUType
       type: object
-    BankingPayeeId:
-      description: A unique identifier for a Banking payee, generated according to [CDR ID Permanence](#id-permanence) requirements.
-      type: string
-      x-cds-type: ASCIIString
-    BankingDomesticPayeeCard:
+      x-conditional:
+      - account
+      - card
+      - payId
+    BankingScheduledPaymentSetV2:
+      description: The set of payment amounts and destination accounts for this payment accommodating multi-part payments. A single entry indicates a simple payment with one destination account. Must have at least one entry.
       example:
-        cardNumber: cardNumber
+        isAmountCalculated: false
+        amount: amount
+        currency: AUD
+        to:
+          domestic:
+            payeeAccountUType: account
+            payId:
+              identifier: identifier
+              name: name
+              type: ABN
+            account:
+              bsb: bsb
+              accountName: accountName
+              accountNumber: accountNumber
+            card:
+              cardNumber: cardNumber
+          accountId: ''
+          biller:
+            billerName: billerName
+            crn: crn
+            billerCode: billerCode
+          digitalWallet:
+            identifier: identifier
+            provider: PAYPAL_AU
+            name: name
+            type: EMAIL
+          payeeReference: payeeReference
+          toUType: accountId
+          nickname: nickname
+          payeeId: ''
+          international:
+            bankDetails:
+              country: country
+              routingNumber: routingNumber
+              fedWireNumber: fedWireNumber
+              chipNumber: chipNumber
+              legalEntityIdentifier: legalEntityIdentifier
+              accountNumber: accountNumber
+              bankAddress:
+                address: address
+                name: name
+              sortCode: sortCode
+              beneficiaryBankBIC: beneficiaryBankBIC
+            beneficiaryDetails:
+              country: country
+              name: name
+              message: message
       properties:
-        cardNumber:
-          description: Name of the account to pay to.
+        to:
+          $ref: '#/components/schemas/BankingScheduledPaymentToV2'
+        isAmountCalculated:
+          default: false
+          description: Flag indicating whether the amount of the payment is calculated based on the context of the event. For instance a payment to reduce the balance of a credit card to zero. If absent then `false` is assumed.
+          type: boolean
+        amount:
+          description: The amount of the next payment if known. Mandatory unless the _isAmountCalculated_ field is set to `true`. Must be zero or positive if present.
           type: string
-          x-cds-type: MaskedPANString
-      required:
-      - cardNumber
-      type: object
-    BankingScheduledPaymentRecurrenceOnceOff:
-      description: Indicates that the payment is a once off payment on a specific future date. Mandatory if the _recurrenceUType_ value is `onceOff`.
-      example:
-        paymentDate: paymentDate
-      properties:
-        paymentDate:
-          description: The scheduled date for the once off payment.
+          x-cds-type: AmountString
+        currency:
+          default: AUD
+          description: The currency for the payment. `AUD` assumed if not present.
           type: string
-          x-cds-type: DateString
+          x-cds-type: CurrencyString
       required:
-      - paymentDate
+      - to
       type: object
-  requestBodies:
-    RequestAccountIds:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RequestAccountIdListV1'
-      description: Request payload containing a list of _accountId_ values to obtain data for.
-      required: true
+      x-conditional:
+      - amount
   headers:
     XFAPIInteractionId:
       description: An **[[RFC4122]](#nref-RFC4122)** UUID used as a correlation id. If provided, the data holder **MUST** play back this value in the _x-fapi-interaction-id_ response header. If not provided a **[[RFC4122]](#nref-RFC4122)** UUID value is required to be provided in the response header to track the interaction.
@@ -2427,3 +2419,11 @@ components:
       schema:
         type: string
       style: simple
+  requestBodies:
+    RequestAccountIds:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RequestAccountIdListV1'
+      description: Request payload containing a list of _accountId_ values to obtain data for.
+      required: true
