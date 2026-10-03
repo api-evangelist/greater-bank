@@ -404,46 +404,60 @@ paths:
       x-version: '1'
 components:
   schemas:
+    RequestAccountIdListV1_data:
+      example:
+        accountIds:
+        - null
+        - null
+      properties:
+        accountIds:
+          description: Array of _accountId_ values to obtain data for.
+          items:
+            $ref: '#/components/schemas/BankingAccountId'
+          type: array
+      required:
+      - accountIds
+      type: object
+    ResponseErrorListV2:
+      properties:
+        errors:
+          description: List of errors.
+          items:
+            $ref: '#/components/schemas/ErrorV2'
+          type: array
+      required:
+      - errors
+      type: object
+    ErrorV2_meta:
+      description: Additional data for customised error codes.
+      properties:
+        urn:
+          description: The CDR error code URN which the application-specific error code extends. Mandatory if the error _code_ is an application-specific error rather than a standardised error code.
+          type: string
+      type: object
+      x-conditional:
+      - urn
+    MetaPaginated:
+      example:
+        totalRecords: 0
+        totalPages: 6
+      properties:
+        totalRecords:
+          description: The total number of records in the full set. See [pagination](#pagination).
+          type: integer
+          x-cds-type: NaturalNumber
+        totalPages:
+          description: The total number of pages in the full set. See [pagination](#pagination).
+          type: integer
+          x-cds-type: NaturalNumber
+      required:
+      - totalPages
+      - totalRecords
+      type: object
     BankingAccountId:
       description: A unique identifier for a Banking account, generated according to [CDR ID Permanence](#id-permanence) requirements.
       type: string
       x-cds-type: ASCIIString
-    LinksPaginated:
-      example:
-        next: next
-        last: last
-        prev: prev
-        self: self
-        first: first
-      properties:
-        self:
-          description: Fully qualified link that generated the current response document.
-          type: string
-          x-cds-type: URIString
-        first:
-          description: URI to the first page of this set. Mandatory if this response is not the first page.
-          type: string
-          x-cds-type: URIString
-        prev:
-          description: URI to the previous page of this set. Mandatory if this response is not the first page.
-          type: string
-          x-cds-type: URIString
-        next:
-          description: URI to the next page of this set. Mandatory if this response is not the last page.
-          type: string
-          x-cds-type: URIString
-        last:
-          description: URI to the last page of this set. Mandatory if this response is not the last page.
-          type: string
-          x-cds-type: URIString
-      required:
-      - self
-      type: object
-      x-conditional:
-      - prev
-      - next
-      - first
-      - last
     ResponseBankingAccountsBalanceList:
       example:
         data:
@@ -525,42 +539,34 @@ components:
       required:
       - balances
       type: object
-    ResponseErrorListV2:
+    ResponseBankingAccountsBalanceById:
+      example:
+        data:
+          accountId: ''
+          purses:
+          - amount: amount
+            currency: currency
+          - amount: amount
+            currency: currency
+          amortisedLimit: '0.00'
+          currentBalance: currentBalance
+          creditLimit: '0.00'
+          currency: AUD
+          availableBalance: availableBalance
+        meta: '{}'
+        links:
+          self: self
       properties:
-        errors:
-          description: List of errors.
-          items:
-            $ref: '#/components/schemas/ErrorV2'
-          type: array
+        data:
+          $ref: '#/components/schemas/BankingBalance'
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          type: object
       required:
-      - errors
+      - data
+      - links
       type: object
-    ErrorV2_meta:
-      description: Additional data for customised error codes.
-      properties:
-        urn:
-          description: The CDR error code URN which the application-specific error code extends. Mandatory if the error _code_ is an application-specific error rather than a standardised error code.
-          type: string
-      type: object
-      x-conditional:
-      - urn
-    BankingProductCategoryV2:
-      description: The category to which a product or account belongs. See [here](#product-categories) for more details.
-      enum:
-      - BUSINESS_LOANS
-      - BUY_NOW_PAY_LATER
-      - CRED_AND_CHRG_CARDS
-      - LEASES
-      - MARGIN_LOANS
-      - OVERDRAFTS
-      - PERS_LOANS
-      - REGULATED_TRUST_ACCOUNTS
-      - RESIDENTIAL_MORTGAGES
-      - TERM_DEPOSITS
-      - TRADE_FINANCE
-      - TRANS_AND_SAVINGS_ACCOUNTS
-      - TRAVEL_CARDS
-      type: string
     Links:
       example:
         self: self
@@ -572,19 +578,56 @@ components:
       required:
       - self
       type: object
-    RequestAccountIdListV1_data:
+    LinksPaginated:
       example:
-        accountIds:
-        - null
-        - null
+        next: next
+        last: last
+        prev: prev
+        self: self
+        first: first
       properties:
-        accountIds:
-          description: Array of _accountId_ values to obtain data for.
-          items:
-            $ref: '#/components/schemas/BankingAccountId'
-          type: array
+        self:
+          description: Fully qualified link that generated the current response document.
+          type: string
+          x-cds-type: URIString
+        first:
+          description: URI to the first page of this set. Mandatory if this response is not the first page.
+          type: string
+          x-cds-type: URIString
+        prev:
+          description: URI to the previous page of this set. Mandatory if this response is not the first page.
+          type: string
+          x-cds-type: URIString
+        next:
+          description: URI to the next page of this set. Mandatory if this response is not the last page.
+          type: string
+          x-cds-type: URIString
+        last:
+          description: URI to the last page of this set. Mandatory if this response is not the last page.
+          type: string
+          x-cds-type: URIString
       required:
-      - accountIds
+      - self
+      type: object
+      x-conditional:
+      - prev
+      - next
+      - first
+      - last
+    RequestAccountIdListV1:
+      example:
+        data:
+          accountIds:
+          - null
+          - null
+        meta: '{}'
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestAccountIdListV1_data'
+        meta:
+          type: object
+      required:
+      - data
       type: object
     ErrorV2:
       properties:
@@ -606,22 +649,23 @@ components:
       type: object
       x-conditional:
       - meta
-    BankingBalancePurse:
-      example:
-        amount: amount
-        currency: currency
-      properties:
-        amount:
-          description: The balance available for this additional currency purse.
-          type: string
-          x-cds-type: AmountString
-        currency:
-          description: The currency for the purse.
-          type: string
-          x-cds-type: CurrencyString
-      required:
-      - amount
-      type: object
+    BankingProductCategoryV2:
+      description: The category to which a product or account belongs. See [here](#product-categories) for more details.
+      enum:
+      - BUSINESS_LOANS
+      - BUY_NOW_PAY_LATER
+      - CRED_AND_CHRG_CARDS
+      - LEASES
+      - MARGIN_LOANS
+      - OVERDRAFTS
+      - PERS_LOANS
+      - REGULATED_TRUST_ACCOUNTS
+      - RESIDENTIAL_MORTGAGES
+      - TERM_DEPOSITS
+      - TRADE_FINANCE
+      - TRANS_AND_SAVINGS_ACCOUNTS
+      - TRAVEL_CARDS
+      type: string
     BankingBalance:
       example:
         accountId: ''
@@ -673,65 +717,21 @@ components:
       - availableBalance
       - currentBalance
       type: object
-    MetaPaginated:
+    BankingBalancePurse:
       example:
-        totalRecords: 0
-        totalPages: 6
+        amount: amount
+        currency: currency
       properties:
-        totalRecords:
-          description: The total number of records in the full set. See [pagination](#pagination).
-          type: integer
-          x-cds-type: NaturalNumber
-        totalPages:
-          description: The total number of pages in the full set. See [pagination](#pagination).
-          type: integer
-          x-cds-type: NaturalNumber
+        amount:
+          description: The balance available for this additional currency purse.
+          type: string
+          x-cds-type: AmountString
+        currency:
+          description: The currency for the purse.
+          type: string
+          x-cds-type: CurrencyString
       required:
-      - totalPages
-      - totalRecords
-      type: object
-    RequestAccountIdListV1:
-      example:
-        data:
-          accountIds:
-          - null
-          - null
-        meta: '{}'
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestAccountIdListV1_data'
-        meta:
-          type: object
-      required:
-      - data
-      type: object
-    ResponseBankingAccountsBalanceById:
-      example:
-        data:
-          accountId: ''
-          purses:
-          - amount: amount
-            currency: currency
-          - amount: amount
-            currency: currency
-          amortisedLimit: '0.00'
-          currentBalance: currentBalance
-          creditLimit: '0.00'
-          currency: AUD
-          availableBalance: availableBalance
-        meta: '{}'
-        links:
-          self: self
-      properties:
-        data:
-          $ref: '#/components/schemas/BankingBalance'
-        links:
-          $ref: '#/components/schemas/Links'
-        meta:
-          type: object
-      required:
-      - data
-      - links
+      - amount
       type: object
   headers:
     XV:
